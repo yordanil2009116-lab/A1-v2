@@ -36,7 +36,7 @@ TopCorner.Parent = TopBar
 
 -- عنوان القائمة
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -50, 1, 0)
+Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
 Title.Text = "ANXAM HUB v1.0 | Reef Military"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -61,6 +61,53 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 6)
 CloseCorner.Parent = CloseBtn
 
+-- زر التصغير (-)
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
+MinimizeBtn.Position = UDim2.new(1, -70, 0, 5)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.TextSize = 22
+MinimizeBtn.Font = Enum.Font.SourceSansBold
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+MinimizeBtn.Parent = TopBar
+
+local MiniBtnCorner = Instance.new("UICorner")
+MiniBtnCorner.CornerRadius = UDim.new(0, 6)
+MiniBtnCorner.Parent = MinimizeBtn
+
+-- أيقونة فتح الواجهة عند التصغير (Mini Toggle Button)
+local MiniToggle = Instance.new("TextButton")
+MiniToggle.Name = "MiniToggle"
+MiniToggle.Size = UDim2.new(0, 120, 0, 35)
+MiniToggle.Position = UDim2.new(0.05, 0, 0.1, 0)
+MiniToggle.Text = "ANXAM HUB"
+MiniToggle.TextColor3 = Color3.fromRGB(0, 170, 255)
+MiniToggle.TextSize = 14
+MiniToggle.Font = Enum.Font.SourceSansBold
+MiniToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+MiniToggle.Active = true
+MiniToggle.Draggable = true
+MiniToggle.Visible = false
+MiniToggle.Parent = ScreenGui
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 8)
+ToggleCorner.Parent = MiniToggle
+
+-- وظيفة زر التصغير
+MinimizeBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MiniToggle.Visible = true
+end)
+
+-- وظيفة إعادة التكبير عند الضغط على الأيقونة
+MiniToggle.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    MiniToggle.Visible = false
+end)
+
+-- وظيفة زر الإغلاق النهائي
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
