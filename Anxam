@@ -61,7 +61,7 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 6)
 CloseCorner.Parent = CloseBtn
 
--- زر التصغير (-)
+-- زر التصغير (-) داخل الشريط العلوي
 local MinimizeBtn = Instance.new("TextButton")
 MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
 MinimizeBtn.Position = UDim2.new(1, -70, 0, 5)
@@ -76,38 +76,36 @@ local MiniBtnCorner = Instance.new("UICorner")
 MiniBtnCorner.CornerRadius = UDim.new(0, 6)
 MiniBtnCorner.Parent = MinimizeBtn
 
--- أيقونة فتح الواجهة عند التصغير (Mini Toggle Button)
-local MiniToggle = Instance.new("TextButton")
-MiniToggle.Name = "MiniToggle"
-MiniToggle.Size = UDim2.new(0, 120, 0, 35)
-MiniToggle.Position = UDim2.new(0.05, 0, 0.1, 0)
-MiniToggle.Text = "ANXAM HUB"
-MiniToggle.TextColor3 = Color3.fromRGB(0, 170, 255)
-MiniToggle.TextSize = 14
-MiniToggle.Font = Enum.Font.SourceSansBold
-MiniToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
-MiniToggle.Active = true
-MiniToggle.Draggable = true
-MiniToggle.Visible = false
-MiniToggle.Parent = ScreenGui
+-- زر التبديل الثابت (Toggle Button) - يظل ظاهراً دائماً
+local PermanentToggle = Instance.new("TextButton")
+PermanentToggle.Name = "PermanentToggle"
+PermanentToggle.Size = UDim2.new(0, 120, 0, 35)
+PermanentToggle.Position = UDim2.new(0.05, 0, 0.1, 0)
+PermanentToggle.Text = "ANXAM HUB"
+PermanentToggle.TextColor3 = Color3.fromRGB(0, 170, 255)
+PermanentToggle.TextSize = 14
+PermanentToggle.Font = Enum.Font.SourceSansBold
+PermanentToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+PermanentToggle.Active = true
+PermanentToggle.Draggable = true
+PermanentToggle.Visible = true -- ظاهر دائماً
+PermanentToggle.Parent = ScreenGui
 
 local ToggleCorner = Instance.new("UICorner")
 ToggleCorner.CornerRadius = UDim.new(0, 8)
-ToggleCorner.Parent = MiniToggle
+ToggleCorner.Parent = PermanentToggle
 
--- وظيفة زر التصغير
+-- وظيفة زر التبديل الثابت (فتح/إغلاق القائمة عند كل كبسة)
+PermanentToggle.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- وظيفة زر التصغير (-) داخل القائمة
 MinimizeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
-    MiniToggle.Visible = true
 end)
 
--- وظيفة إعادة التكبير عند الضغط على الأيقونة
-MiniToggle.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true
-    MiniToggle.Visible = false
-end)
-
--- وظيفة زر الإغلاق النهائي
+-- وظيفة زر الإغلاق النهائي (X)
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
