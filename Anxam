@@ -1,31 +1,128 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- إنشاء الشاشة الرئيسية
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
 
-local Window = Rayfield:CreateWindow({
-   Name = "anxam v1.1 | COMMAND CENTER",
-   LoadingTitle = "Barem Reef Hub",
-   LoadingSubtitle = "by anxam",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "AnxamConfig"
-   },
-   KeySystem = false
-})
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AnxamCustomUI"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
 
--- 1. قائمة اللاعب (الميزات الأساسية)
-local PlayerTab = Window:CreateTab("اللاعب", 4483362458)
+-- الإطار الرئيسي (Main Frame)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 550, 0, 320)
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -160)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true -- تحريك القائمة باللمس
+MainFrame.Parent = ScreenGui
 
--- 2. قائمة الانيميشنات
-local AnimsTab = Window:CreateTab("الأنيميشنات", 4483362458)
+-- زوايا مائلة للإطار
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.Parent = MainFrame
 
--- 3. قائمة الاستهداف
-local TargetTab = Window:CreateTab("استهداف", 4483362458)
+-- شريط علوي (Header)
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
 
--- 4. قائمة المواقع
-local LocationsTab = Window:CreateTab("المواقع", 4483362458)
+local TopCorner = Instance.new("UICorner")
+TopCorner.CornerRadius = UDim.new(0, 10)
+TopCorner.Parent = TopBar
 
--- 5. القائمة الخامسة (فارغة حالياً)
-local EmptyTab = Window:CreateTab("قائمة جديدة", 4483362458)
+-- عنوان القائمة
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -50, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.Text = "ANXAM HUB v1.0 | Reef Military"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 16
+Title.Font = Enum.Font.SourceSansBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.BackgroundTransparency = 1
+Title.Parent = TopBar
 
--- 6. قائمة الأخبار
-local NewsTab = Window:CreateTab("News | الأخبار", 4483362458)
+-- زر الإغلاق (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0, 5)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+CloseBtn.TextSize = 18
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+CloseBtn.Parent = TopBar
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.Parent = CloseBtn
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- شريط التبويبات (Tab Bar)
+local TabBar = Instance.new("Frame")
+TabBar.Size = UDim2.new(0, 130, 1, -50)
+TabBar.Position = UDim2.new(0, 10, 0, 45)
+TabBar.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+TabBar.Parent = MainFrame
+
+local TabCorner = Instance.new("UICorner")
+TabCorner.CornerRadius = UDim.new(0, 8)
+TabCorner.Parent = TabBar
+
+local TabLayout = Instance.new("UIListLayout")
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabLayout.Padding = UDim.new(0, 5)
+TabLayout.Parent = TabBar
+
+-- حاوية الصفحات (Page Container)
+local Container = Instance.new("Frame")
+Container.Size = UDim2.new(1, -160, 1, -50)
+Container.Position = UDim2.new(0, 150, 0, 45)
+Container.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+Container.Parent = MainFrame
+
+local ContainerCorner = Instance.new("UICorner")
+ContainerCorner.CornerRadius = UDim.new(0, 8)
+ContainerCorner.Parent = Container
+
+-- أسماء التبويبات الخمسة
+local Tabs = {"اللاعب", "الأنيميشنات", "استهداف", "المواقع", "قائمة جديدة"}
+local Pages = {}
+
+for i, tabName in ipairs(Tabs) do
+    -- إنشاء صفحة التبويب
+    local Page = Instance.new("ScrollingFrame")
+    Page.Size = UDim2.new(1, -10, 1, -10)
+    Page.Position = UDim2.new(0, 5, 0, 5)
+    Page.BackgroundTransparency = 1
+    Page.Visible = (i == 1)
+    Page.ScrollBarThickness = 4
+    Page.Parent = Container
+    Pages[tabName] = Page
+
+    -- زر التبويب
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, 0, 0, 35)
+    TabBtn.Text = tabName
+    TabBtn.TextColor3 = (i == 1) and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(200, 200, 200)
+    TabBtn.TextSize = 14
+    TabBtn.Font = Enum.Font.SourceSansBold
+    TabBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    TabBtn.Parent = TabBar
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = TabBtn
+
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(Pages) do p.Visible = false end
+        Pages[tabName].Visible = true
+    end)
+end
