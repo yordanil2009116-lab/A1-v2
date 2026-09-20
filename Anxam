@@ -1,0 +1,31 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "anxam v1.1 | COMMAND CENTER",
+   LoadingTitle = "Barem Reef Hub",
+   LoadingSubtitle = "by anxam",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "AnxamConfig"
+   },
+   KeySystem = false
+})
+
+-- 1. قائمة اللاعب (الميزات الأساسية)
+local PlayerTab = Window:CreateTab("اللاعب", 4483362458)
+
+-- 2. قائمة الانيميشنات
+local AnimsTab = Window:CreateTab("الأنيميشنات", 4483362458)
+
+-- 3. قائمة الاستهداف
+local TargetTab = Window:CreateTab("استهداف", 4483362458)
+
+-- 4. قائمة المواقع
+local LocationsTab = Window:CreateTab("المواقع", 4483362458)
+
+-- 5. القائمة الخامسة (فارغة حالياً)
+local EmptyTab = Window:CreateTab("قائمة جديدة", 4483362458)
+
+-- 6. قائمة الأخبار
+local NewsTab = Window:CreateTab("News | الأخبار", 4483362458)
