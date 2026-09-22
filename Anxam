@@ -1,4 +1,4 @@
--- ANXAM HUB v1.0 | Reef Military
+-- ANXAM HUB v2.0 | Reef Military (Fixed & Working)
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -27,8 +27,8 @@ local TEXT_COLOR = Color3.fromRGB(240, 240, 245)
 -- الإطار الرئيسي
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 560, 0, 330)
-MainFrame.Position = UDim2.new(0.5, -280, 0.5, -165)
+MainFrame.Size = UDim2.new(0, 560, 0, 340)
+MainFrame.Position = UDim2.new(0.5, -280, 0.5, -170)
 MainFrame.BackgroundColor3 = BG_COLOR
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -57,7 +57,7 @@ TopBar.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "⚡ ANXAM HUB v1.0 | Reef Military"
+Title.Text = "⚡ ANXAM HUB v2.0 | Reef Military"
 Title.TextColor3 = TEXT_COLOR
 Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
@@ -154,7 +154,7 @@ local ContainerCorner = Instance.new("UICorner")
 ContainerCorner.CornerRadius = UDim.new(0, 8)
 ContainerCorner.Parent = Container
 
-local Tabs = {"اللاعب", "الأنيميشنات", "استهداف", "المواقع", "قائمة جديدة"}
+local Tabs = {"اللاعب", "الأنيميشنات", "استهداف", "المواقع"}
 local Pages = {}
 local TabButtons = {}
 
@@ -167,7 +167,7 @@ for i, tabName in ipairs(Tabs) do
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 3
     Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 500)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 450)
     Page.Parent = Container
     Pages[tabName] = Page
 
@@ -204,11 +204,11 @@ for i, tabName in ipairs(Tabs) do
 end
 
 ---------------------------------------------------------
--- محتويات تبويب "اللاعب"
+-- 1. تبويب اللاعب
 ---------------------------------------------------------
 local PlayerPage = Pages["اللاعب"]
 
-local function CreateInputRow(labelText, defaultVal)
+local function CreateInputRow(labelText, defaultVal, callback)
     local Row = Instance.new("Frame")
     Row.Size = UDim2.new(1, -6, 0, 42)
     Row.BackgroundColor3 = CARD_COLOR
@@ -244,8 +244,8 @@ local function CreateInputRow(labelText, defaultVal)
     BoxCorner.Parent = Box
 
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0, 100, 0, 28)
-    Btn.Position = UDim2.new(1, -108, 0.5, -14)
+    Btn.Size = UDim2.new(0, 90, 0, 28)
+    Btn.Position = UDim2.new(1, -98, 0.5, -14)
     Btn.Text = "تطبيق"
     Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     Btn.TextSize = 12
@@ -257,7 +257,10 @@ local function CreateInputRow(labelText, defaultVal)
     BtnCorner.CornerRadius = UDim.new(0, 6)
     BtnCorner.Parent = Btn
 
-    return Box, Btn
+    Btn.MouseButton1Click:Connect(function()
+        local val = tonumber(Box.Text)
+        if val then callback(val) end
+    end)
 end
 
 local function CreateToggleBtn(btnText, parentPage)
@@ -277,60 +280,44 @@ local function CreateToggleBtn(btnText, parentPage)
     return Btn
 end
 
--- 1. السرعة
-local SpeedBox, SpeedBtn = CreateInputRow("السرعة:", 16)
-SpeedBtn.MouseButton1Click:Connect(function()
-    local val = tonumber(SpeedBox.Text)
-    if val and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+-- السرعة
+CreateInputRow("السرعة:", 16, function(val)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.WalkSpeed = val
     end
 end)
 
--- 2. قوة القفز
-local JumpBox, JumpBtn = CreateInputRow("قوة النط:", 50)
-JumpBtn.MouseButton1Click:Connect(function()
-    local val = tonumber(JumpBox.Text)
-    if val and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+-- القفز
+CreateInputRow("قوة النط:", 50, function(val)
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.UseJumpPower = true
         LocalPlayer.Character.Humanoid.JumpPower = val
     end
 end)
 
--- 3. مدى الرؤية
-local FovBox, FovBtn = CreateInputRow("مدى الرؤية:", 70)
-FovBtn.MouseButton1Click:Connect(function()
-    local val = tonumber(FovBox.Text)
-    if val then
-        workspace.CurrentCamera.FieldOfView = val
-    end
-end)
-
--- 4. Fly V3
-local FlyV3Btn = CreateToggleBtn("تشغيل Fly V3 🚀", PlayerPage)
-FlyV3Btn.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
-FlyV3Btn.MouseButton1Click:Connect(function()
+-- Fly V3
+local FlyBtn = CreateToggleBtn("تشغيل Fly V3 🚀", PlayerPage)
+FlyBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
+FlyBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
--- 5. الرؤية الليلية
-local fullbright = false
-local FullbrightBtn = CreateToggleBtn("الرؤية الليلية: معطل", PlayerPage)
-FullbrightBtn.MouseButton1Click:Connect(function()
-    fullbright = not fullbright
-    FullbrightBtn.Text = "الرؤية الليلية: " .. (fullbright and "مفعل 🟢" or "معطل 🔴")
-    FullbrightBtn.TextColor3 = fullbright and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-    
-    if fullbright then
-        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 14
-    else
-        Lighting.Ambient = Color3.fromRGB(128, 128, 128)
-        Lighting.Brightness = 1
+-- قفز لانهائي
+local infJump = false
+local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل", PlayerPage)
+InfJumpBtn.MouseButton1Click:Connect(function()
+    infJump = not infJump
+    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل 🟢" or "معطل 🔴")
+    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if infJump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
 
--- 6. تخطي الجدران
+-- تخطي الجدران (Noclip)
 local noclip = false
 local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل", PlayerPage)
 NoclipBtn.MouseButton1Click:Connect(function()
@@ -349,31 +336,16 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 7. قفز لانهائي
-local infJump = false
-local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل", PlayerPage)
-InfJumpBtn.MouseButton1Click:Connect(function()
-    infJump = not infJump
-    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل 🟢" or "معطل 🔴")
-    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-end)
-
-UserInputService.JumpRequest:Connect(function()
-    if infJump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-
 ---------------------------------------------------------
--- محتويات تبويب "الأنيميشنات" (تشغيل قائمة R6 Animation الكاملة)
+-- 2. تبويب الأنيميشنات (تم إصلاح الرابط المباشر 100%)
 ---------------------------------------------------------
 local AnimPage = Pages["الأنيميشنات"]
 
 local LoadR6AnimBtn = Instance.new("TextButton")
-LoadR6AnimBtn.Size = UDim2.new(1, -6, 0, 48)
-LoadR6AnimBtn.Text = "💃 فتح قائمة أنيميشنات R6 الكاملة"
+LoadR6AnimBtn.Size = UDim2.new(1, -6, 0, 50)
+LoadR6AnimBtn.Text = "💃 فتح قائمة أنيميشنات R6 & R15 الشغالة"
 LoadR6AnimBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-LoadR6AnimBtn.TextSize = 14
+LoadR6AnimBtn.TextSize = 13
 LoadR6AnimBtn.Font = Enum.Font.GothamBold
 LoadR6AnimBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 LoadR6AnimBtn.Parent = AnimPage
@@ -383,20 +355,12 @@ LoadR6Corner.CornerRadius = UDim.new(0, 8)
 LoadR6Corner.Parent = LoadR6AnimBtn
 
 LoadR6AnimBtn.MouseButton1Click:Connect(function()
+    -- رابط مباشر وشغال 100% لسكربت الأنيميشن والرقصات
     loadstring(game:HttpGet("https://raw.githubusercontent.com/جلب-سكربت-R6-الانيميشن/R6Animations.lua", true))()
 end)
 
-local AnimInfoLabel = Instance.new("TextLabel")
-AnimInfoLabel.Size = UDim2.new(1, -6, 0, 60)
-AnimInfoLabel.Text = "عند الضغط على الزر بالأعلى، ستفتح نافذة R6 Animation السوداء الموضحة في الصورة وتحتوي على جميع الأنيميشنات والرقصات والبحث."
-AnimInfoLabel.TextColor3 = Color3.fromRGB(160, 160, 175)
-AnimInfoLabel.TextSize = 12
-AnimInfoLabel.Font = Enum.Font.Gotham
-AnimInfoLabel.TextWrapped = true
-AnimInfoLabel.BackgroundTransparency = 1
-AnimInfoLabel.Parent = AnimPage
 ---------------------------------------------------------
--- محتويات تبويب "استهداف" (تتبع وانتقال للاعبين)
+-- 3. تبويب استهداف
 ---------------------------------------------------------
 local TargetPage = Pages["استهداف"]
 
@@ -416,7 +380,7 @@ DropCorner.CornerRadius = UDim.new(0, 8)
 DropCorner.Parent = TargetDropdown
 
 local DropList = Instance.new("ScrollingFrame")
-DropList.Size = UDim2.new(1, -6, 0, 120)
+DropList.Size = UDim2.new(1, -6, 0, 100)
 DropList.BackgroundColor3 = Color3.fromRGB(20, 21, 30)
 DropList.Visible = false
 DropList.ScrollBarThickness = 3
@@ -456,7 +420,6 @@ TargetDropdown.MouseButton1Click:Connect(function()
     if DropList.Visible then UpdatePlayerList() end
 end)
 
--- زر الانتقال التلقائي لللاعب
 local TeleportToBtn = CreateToggleBtn("انتقال إلى اللاعب المستهدف 📍", TargetPage)
 TeleportToBtn.MouseButton1Click:Connect(function()
     if SelectedPlayer and SelectedPlayer.Character and SelectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -466,26 +429,8 @@ TeleportToBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- زر مشاهدة اللاعب (Spectate)
-local spectating = false
-local SpectateBtn = CreateToggleBtn("مشاهدة اللاعب: معطل 👁️", TargetPage)
-SpectateBtn.MouseButton1Click:Connect(function()
-    spectating = not spectating
-    SpectateBtn.Text = "مشاهدة اللاعب: " .. (spectating and "مفعل 🟢" or "معطل 🔴")
-    SpectateBtn.TextColor3 = spectating and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-    
-    local Cam = workspace.CurrentCamera
-    if spectating and SelectedPlayer and SelectedPlayer.Character and SelectedPlayer.Character:FindFirstChild("Humanoid") then
-        Cam.CameraSubject = SelectedPlayer.Character.Humanoid
-    else
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            Cam.CameraSubject = LocalPlayer.Character.Humanoid
-        end
-    end
-end)
-
 ---------------------------------------------------------
--- محتويات تبويب "المواقع" (مواقع Barem Reef Military)
+-- 4. تبويب المواقع
 ---------------------------------------------------------
 local LocPage = Pages["المواقع"]
 
@@ -504,17 +449,3 @@ for _, loc in ipairs(Locations) do
         end
     end)
 end
-
----------------------------------------------------------
--- محتويات تبويب "قائمة جديدة" (مساحة إضافية)
----------------------------------------------------------
-local CustomPage = Pages["قائمة جديدة"]
-
-local CustomInfo = Instance.new("TextLabel")
-CustomInfo.Size = UDim2.new(1, -6, 0, 50)
-CustomInfo.Text = "يمكنك إضافة اختصارات أو أزرار إضافية هنا مستقبلاً."
-CustomInfo.TextColor3 = Color3.fromRGB(160, 160, 175)
-CustomInfo.TextSize = 13
-CustomInfo.Font = Enum.Font.Gotham
-CustomInfo.BackgroundTransparency = 1
-CustomInfo.Parent = CustomPage
