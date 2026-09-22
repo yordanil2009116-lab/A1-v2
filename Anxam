@@ -1,10 +1,15 @@
 -- إنشاء الشاشة الرئيسية
-local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AnxamCustomUI"
-ScreenGui.Parent = CoreGui
+ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
 
 -- الإطار الرئيسي (Main Frame)
@@ -15,10 +20,10 @@ MainFrame.Position = UDim2.new(0.5, -275, 0.5, -160)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
-MainFrame.Draggable = true -- تحريك القائمة باللمس
+MainFrame.Draggable = true
+MainFrame.Visible = true
 MainFrame.Parent = ScreenGui
 
--- زوايا مائلة للإطار
 local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 10)
 MainCorner.Parent = MainFrame
@@ -61,7 +66,7 @@ local CloseCorner = Instance.new("UICorner")
 CloseCorner.CornerRadius = UDim.new(0, 6)
 CloseCorner.Parent = CloseBtn
 
--- زر التصغير (-) داخل الشريط العلوي
+-- زر التصغير (-)
 local MinimizeBtn = Instance.new("TextButton")
 MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
 MinimizeBtn.Position = UDim2.new(1, -70, 0, 5)
@@ -76,36 +81,35 @@ local MiniBtnCorner = Instance.new("UICorner")
 MiniBtnCorner.CornerRadius = UDim.new(0, 6)
 MiniBtnCorner.Parent = MinimizeBtn
 
--- زر التبديل الثابت (Toggle Button) - يظل ظاهراً دائماً
-local PermanentToggle = Instance.new("TextButton")
-PermanentToggle.Name = "PermanentToggle"
-PermanentToggle.Size = UDim2.new(0, 120, 0, 35)
-PermanentToggle.Position = UDim2.new(0.05, 0, 0.1, 0)
-PermanentToggle.Text = "ANXAM HUB"
-PermanentToggle.TextColor3 = Color3.fromRGB(0, 170, 255)
-PermanentToggle.TextSize = 14
-PermanentToggle.Font = Enum.Font.SourceSansBold
-PermanentToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
-PermanentToggle.Active = true
-PermanentToggle.Draggable = true
-PermanentToggle.Visible = true -- ظاهر دائماً
-PermanentToggle.Parent = ScreenGui
+-- زر التبديل الصغير (Toggle Button)
+local MiniToggle = Instance.new("TextButton")
+MiniToggle.Name = "MiniToggle"
+MiniToggle.Size = UDim2.new(0, 120, 0, 35)
+MiniToggle.Position = UDim2.new(0.02, 0, 0.2, 0)
+MiniToggle.Text = "ANXAM HUB"
+MiniToggle.TextColor3 = Color3.fromRGB(0, 170, 255)
+MiniToggle.TextSize = 14
+MiniToggle.Font = Enum.Font.SourceSansBold
+MiniToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+MiniToggle.Active = true
+MiniToggle.Draggable = true
+MiniToggle.Visible = false
+MiniToggle.Parent = ScreenGui
 
 local ToggleCorner = Instance.new("UICorner")
 ToggleCorner.CornerRadius = UDim.new(0, 8)
-ToggleCorner.Parent = PermanentToggle
+ToggleCorner.Parent = MiniToggle
 
--- وظيفة زر التبديل الثابت (فتح/إغلاق القائمة عند كل كبسة)
-PermanentToggle.MouseButton1Click:Connect(function()
-    MainFrame.Visible = not MainFrame.Visible
+MiniToggle.MouseButton1Click:Connect(function()
+    MiniToggle.Visible = false
+    MainFrame.Visible = true
 end)
 
--- وظيفة زر التصغير (-) داخل القائمة
 MinimizeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
+    MiniToggle.Visible = true
 end)
 
--- وظيفة زر الإغلاق النهائي (X)
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
@@ -137,22 +141,20 @@ local ContainerCorner = Instance.new("UICorner")
 ContainerCorner.CornerRadius = UDim.new(0, 8)
 ContainerCorner.Parent = Container
 
--- أسماء التبويبات الخمسة
 local Tabs = {"اللاعب", "الأنيميشنات", "استهداف", "المواقع", "قائمة جديدة"}
 local Pages = {}
 
 for i, tabName in ipairs(Tabs) do
-    -- إنشاء صفحة التبويب
     local Page = Instance.new("ScrollingFrame")
     Page.Size = UDim2.new(1, -10, 1, -10)
     Page.Position = UDim2.new(0, 5, 0, 5)
     Page.BackgroundTransparency = 1
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 4
+    Page.CanvasSize = UDim2.new(0, 0, 0, 350)
     Page.Parent = Container
     Pages[tabName] = Page
 
-    -- زر التبويب
     local TabBtn = Instance.new("TextButton")
     TabBtn.Size = UDim2.new(1, 0, 0, 35)
     TabBtn.Text = tabName
@@ -171,3 +173,157 @@ for i, tabName in ipairs(Tabs) do
         Pages[tabName].Visible = true
     end)
 end
+
+---------------------------------------------------------
+-- محتويات تبويب "اللاعب"
+---------------------------------------------------------
+local PlayerPage = Pages["اللاعب"]
+
+local PageLayout = Instance.new("UIListLayout")
+PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+PageLayout.Padding = UDim.new(0, 8)
+PageLayout.Parent = PlayerPage
+
+-- دالة مساعدة لإنشاء السلايدر/مربع الإدخال مع الزر
+local function CreateInputRow(labelText, defaultVal, placeholderText)
+    local Row = Instance.new("Frame")
+    Row.Size = UDim2.new(1, -10, 0, 40)
+    Row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Row.Parent = PlayerPage
+
+    local RowCorner = Instance.new("UICorner")
+    RowCorner.CornerRadius = UDim.new(0, 6)
+    RowCorner.Parent = Row
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(0, 110, 1, 0)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Text = labelText
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 14
+    Label.Font = Enum.Font.SourceSansBold
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+    Label.Parent = Row
+
+    local Box = Instance.new("TextBox")
+    Box.Size = UDim2.new(0, 80, 0, 28)
+    Box.Position = UDim2.new(0, 125, 0.5, -14)
+    Box.Text = tostring(defaultVal)
+    Box.PlaceholderText = placeholderText
+    Box.TextColor3 = Color3.fromRGB(0, 170, 255)
+    Box.TextSize = 14
+    Box.Font = Enum.Font.SourceSansBold
+    Box.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+    Box.Parent = Row
+
+    local BoxCorner = Instance.new("UICorner")
+    BoxCorner.CornerRadius = UDim.new(0, 4)
+    BoxCorner.Parent = Box
+
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(0, 110, 0, 28)
+    Btn.Position = UDim2.new(1, -120, 0.5, -14)
+    Btn.Text = "تطبيق"
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.SourceSansBold
+    Btn.BackgroundColor3 = Color3.fromRGB(0, 140, 220)
+    Btn.Parent = Row
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 4)
+    BtnCorner.Parent = Btn
+
+    return Box, Btn
+end
+
+-- 1. زر السرعة (WalkSpeed)
+local SpeedBox, SpeedBtn = CreateInputRow("السرعة:", 16, "العدد")
+SpeedBtn.MouseButton1Click:Connect(function()
+    local val = tonumber(SpeedBox.Text)
+    if val and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = val
+    end
+end)
+
+-- 2. زر قوة القفز (JumpPower)
+local JumpBox, JumpBtn = CreateInputRow("قوة النط:", 50, "العدد")
+JumpBtn.MouseButton1Click:Connect(function()
+    local val = tonumber(JumpBox.Text)
+    if val and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.UseJumpPower = true
+        LocalPlayer.Character.Humanoid.JumpPower = val
+    end
+end)
+
+-- 3. زر سرعت الطيران (Fly Speed)
+local FlyBox, FlyBtn = CreateInputRow("سرعة الطيران:", 50, "العدد")
+local flying = false
+FlyBtn.MouseButton1Click:Connect(function()
+    flying = not flying
+    FlyBtn.Text = flying and "إيقاف الطيران" or "تطبيق الطيران"
+    FlyBtn.BackgroundColor3 = flying and Color3.fromRGB(220, 60, 60) or Color3.fromRGB(0, 140, 220)
+    -- منطق محرك الطيران يتم ربطه مع FlyBox.Text هنا حسب الرغبة
+end)
+
+-- دالة مساعدة لإنشاء الأزرار العادية (تخطي جدران، قفز لانهائي، إعادة ريسبون)
+local function CreateNormalButton(btnText)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -10, 0, 36)
+    Btn.Text = btnText
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 14
+    Btn.Font = Enum.Font.SourceSansBold
+    Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Btn.Parent = PlayerPage
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = Btn
+
+    return Btn
+end
+
+-- 4. زر تخطي الجدران (Noclip)
+local noclip = false
+local NoclipBtn = CreateNormalButton("تخطي الجدران (Noclip): معطل")
+NoclipBtn.MouseButton1Click:Connect(function()
+    noclip = not noclip
+    NoclipBtn.Text = "تخطي الجدران (Noclip): " .. (noclip and "مفعل" or "معطل")
+    NoclipBtn.TextColor3 = noclip and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 255, 255)
+end)
+
+RunService.Stepped:Connect(function()
+    if noclip and LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- 5. زر قفز لانهائي (Infinite Jump)
+local infJump = false
+local InfJumpBtn = CreateNormalButton("قفز لانهائي: معطل")
+InfJumpBtn.MouseButton1Click:Connect(function()
+    infJump = not infJump
+    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل" or "معطل")
+    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 255, 255)
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if infJump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+-- 6. زر إعادة إنعاش الشخصية (Reset)
+local ResetBtn = CreateNormalButton("إعادة تعيين الشخصية (Reset)")
+ResetBtn.BackgroundColor3 = Color3.fromRGB(55, 35, 40)
+ResetBtn.MouseButton1Click:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.Health = 0
+    end
+end)
