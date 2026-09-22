@@ -1,4 +1,4 @@
--- ANXAM HUB v6.0 | Reef Military (Target System)
+-- ANXAM HUB v6.1 | Fixed Target System
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -55,7 +55,7 @@ TopBar.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "⚡ ANXAM HUB v6.0 | Target System"
+Title.Text = "⚡ ANXAM HUB v6.1 | Target System"
 Title.TextColor3 = TEXT_COLOR
 Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
@@ -377,7 +377,7 @@ for _, animData in ipairs(AnimationsList) do
 end
 
 ---------------------------------------------------------
--- 3. تبويب استهداف (التعديل المطلوب حسب الرسمة)
+-- 3. تبويب استهداف (Target System)
 ---------------------------------------------------------
 local TargetPage = Pages["استهداف"]
 local TargetPlayerSelected = nil
@@ -389,7 +389,7 @@ local SearchBox = Instance.new("TextBox")
 SearchBox.Name = "SearchBox"
 SearchBox.Size = UDim2.new(0.52, 0, 0, 36)
 SearchBox.Position = UDim2.new(0.48, 0, 0, 0)
-SearchBox.PlaceholderText = "🔍 اكتب اسم اللاعب هنا..."
+SearchBox.PlaceholderText = "🔍 اكتب اسم اللاعب..."
 SearchBox.PlaceholderColor3 = Color3.fromRGB(130, 130, 145)
 SearchBox.Text = ""
 SearchBox.TextColor3 = TEXT_COLOR
@@ -434,15 +434,15 @@ AvatarCorner.CornerRadius = UDim.new(0, 8)
 AvatarCorner.Parent = AvatarFrame
 
 local AvatarImage = Instance.new("ImageLabel")
-AvatarImage.Size = UDim2.new(0, 105, 0, 105)
-AvatarImage.Position = UDim2.new(0.5, -52, 0.5, -52)
+AvatarImage.Size = UDim2.new(0, 100, 0, 100)
+AvatarImage.Position = UDim2.new(0.5, -50, 0.4, -50)
 AvatarImage.BackgroundTransparency = 1
 AvatarImage.Image = "rbxassetid://0"
 AvatarImage.Parent = AvatarFrame
 
 local TargetNameLabel = Instance.new("TextLabel")
 TargetNameLabel.Size = UDim2.new(1, 0, 0, 20)
-TargetNameLabel.Position = UDim2.new(0, 0, 1, -20)
+TargetNameLabel.Position = UDim2.new(0, 0, 1, -22)
 TargetNameLabel.Text = "لم يتم اختيار لاعب"
 TargetNameLabel.TextColor3 = Color3.fromRGB(170, 170, 185)
 TargetNameLabel.TextSize = 11
@@ -490,7 +490,7 @@ local SpecCorner = Instance.new("UICorner")
 SpecCorner.CornerRadius = UDim.new(0, 8)
 SpecCorner.Parent = SpectateBtn
 
--- 3. زر التحديد (حجم أحمر حوله)
+-- 3. زر التحديد (أحمر)
 local HighlightBtn = Instance.new("TextButton")
 HighlightBtn.Size = UDim2.new(1, 0, 0, 35)
 HighlightBtn.Text = "🔴 تحديد المستهدف (أحمر)"
@@ -505,19 +505,15 @@ HLCorner.CornerRadius = UDim.new(0, 8)
 HLCorner.Parent = HighlightBtn
 
 ---------------------------------------------------------
--- منطق ووظائف الاستهداف
+-- وظائف الاستهداف مع حماية من الأخطاء
 ---------------------------------------------------------
 local function SelectTarget(plr)
     TargetPlayerSelected = plr
     TargetNameLabel.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
     TargetNameLabel.TextColor3 = ACCENT_BLUE
 
-    -- جلب سكن وصورة اللاعب
-    task.spawn(function()
-        local content, isLoaded = Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size150x150)
-        if isLoaded then
-            AvatarImage.Image = content
-        end
+    pcall(function()
+        AvatarImage.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. plr.UserId .. "&width=150&height=150&format=png"
     end)
 end
 
@@ -526,9 +522,10 @@ local function RefreshServerList(filterText)
         if child:IsA("TextButton") then child:Destroy() end
     end
 
+    local filter = filterText or ""
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer then
-            if filterText == "" or string.find(string.lower(plr.Name), string.lower(filterText)) or string.find(string.lower(plr.DisplayName), string.lower(filterText)) then
+            if filter == "" or string.find(string.lower(plr.Name), string.lower(filter)) or string.find(string.lower(plr.DisplayName), string.lower(filter)) then
                 local Btn = Instance.new("TextButton")
                 Btn.Size = UDim2.new(1, -6, 0, 30)
                 Btn.Text = "  " .. plr.DisplayName .. " (@" .. plr.Name .. ")"
@@ -551,17 +548,15 @@ local function RefreshServerList(filterText)
     end
 end
 
--- البحث التلقائي عند الكتابة
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     RefreshServerList(SearchBox.Text)
 end)
 
--- تحديث السيرفر عند دخول/خروج لاعبين
 Players.PlayerAdded:Connect(function() RefreshServerList(SearchBox.Text) end)
 Players.PlayerRemoving:Connect(function() RefreshServerList(SearchBox.Text) end)
 RefreshServerList("")
 
--- 1. كود زر الانتقال
+-- 1. انتقال
 TPBtn.MouseButton1Click:Connect(function()
     if TargetPlayerSelected and TargetPlayerSelected.Character and TargetPlayerSelected.Character:FindFirstChild("HumanoidRootPart") then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -570,14 +565,17 @@ TPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. كود زر المشاهدة
+-- 2. مشاهدة
 SpectateBtn.MouseButton1Click:Connect(function()
     if IsSpectating then
         IsSpectating = false
-        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        end
         SpectateBtn.Text = "👁️ مشاهدة المستهدف"
         SpectateBtn.BackgroundColor3 = CARD_COLOR
     else
         if TargetPlayerSelected and TargetPlayerSelected.Character and TargetPlayerSelected.Character:FindFirstChildOfClass("Humanoid") then
             IsSpectating = true
-            workspace.CurrentCamera.CameraSubject = TargetPlayerSelecte
+            workspace.CurrentCamera.CameraSubject = TargetPlayerSelected.Character:FindFirstChildOfClass("Humanoid")
+            SpectateBtn.Text = "🛑 
