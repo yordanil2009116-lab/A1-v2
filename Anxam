@@ -7,6 +7,11 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
+-- حذف الواجهة القديمة إذا كانت موجودة لمنع التكرار
+if PlayerGui:FindFirstChild("AnxamCustomUI") then
+    PlayerGui.AnxamCustomUI:Destroy()
+end
+
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AnxamCustomUI"
 ScreenGui.Parent = PlayerGui
@@ -151,7 +156,7 @@ for i, tabName in ipairs(Tabs) do
     Page.BackgroundTransparency = 1
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 4
-    Page.CanvasSize = UDim2.new(0, 0, 0, 350)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 320)
     Page.Parent = Container
     Pages[tabName] = Page
 
@@ -184,7 +189,6 @@ PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PageLayout.Padding = UDim.new(0, 8)
 PageLayout.Parent = PlayerPage
 
--- دالة مساعدة لإنشاء السلايدر/مربع الإدخال مع الزر
 local function CreateInputRow(labelText, defaultVal, placeholderText)
     local Row = Instance.new("Frame")
     Row.Size = UDim2.new(1, -10, 0, 40)
@@ -238,7 +242,7 @@ local function CreateInputRow(labelText, defaultVal, placeholderText)
     return Box, Btn
 end
 
--- 1. زر السرعة (WalkSpeed)
+-- 1. السرعة
 local SpeedBox, SpeedBtn = CreateInputRow("السرعة:", 16, "العدد")
 SpeedBtn.MouseButton1Click:Connect(function()
     local val = tonumber(SpeedBox.Text)
@@ -247,7 +251,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. زر قوة القفز (JumpPower)
+-- 2. قوة القفز
 local JumpBox, JumpBtn = CreateInputRow("قوة النط:", 50, "العدد")
 JumpBtn.MouseButton1Click:Connect(function()
     local val = tonumber(JumpBox.Text)
@@ -257,17 +261,9 @@ JumpBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. زر سرعت الطيران (Fly Speed)
+-- 3. سرعة الطيران
 local FlyBox, FlyBtn = CreateInputRow("سرعة الطيران:", 50, "العدد")
-local flying = false
-FlyBtn.MouseButton1Click:Connect(function()
-    flying = not flying
-    FlyBtn.Text = flying and "إيقاف الطيران" or "تطبيق الطيران"
-    FlyBtn.BackgroundColor3 = flying and Color3.fromRGB(220, 60, 60) or Color3.fromRGB(0, 140, 220)
-    -- منطق محرك الطيران يتم ربطه مع FlyBox.Text هنا حسب الرغبة
-end)
 
--- دالة مساعدة لإنشاء الأزرار العادية (تخطي جدران، قفز لانهائي، إعادة ريسبون)
 local function CreateNormalButton(btnText)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -10, 0, 36)
@@ -285,7 +281,7 @@ local function CreateNormalButton(btnText)
     return Btn
 end
 
--- 4. زر تخطي الجدران (Noclip)
+-- 4. تخطي الجدران
 local noclip = false
 local NoclipBtn = CreateNormalButton("تخطي الجدران (Noclip): معطل")
 NoclipBtn.MouseButton1Click:Connect(function()
@@ -304,7 +300,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 5. زر قفز لانهائي (Infinite Jump)
+-- 5. قفز لانهائي
 local infJump = false
 local InfJumpBtn = CreateNormalButton("قفز لانهائي: معطل")
 InfJumpBtn.MouseButton1Click:Connect(function()
@@ -319,7 +315,7 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- 6. زر إعادة إنعاش الشخصية (Reset)
+-- 6. إعادة إنعاش الشخصية
 local ResetBtn = CreateNormalButton("إعادة تعيين الشخصية (Reset)")
 ResetBtn.BackgroundColor3 = Color3.fromRGB(55, 35, 40)
 ResetBtn.MouseButton1Click:Connect(function()
