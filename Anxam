@@ -1,6 +1,4 @@
 -- ANXAM HUB v1.0 | Reef Military
--- PART 1 / 1 (Full Code)
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -173,7 +171,7 @@ for i, tabName in ipairs(Tabs) do
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 3
     Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 420)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 450)
     Page.Parent = Container
     Pages[tabName] = Page
 
@@ -266,6 +264,23 @@ local function CreateInputRow(labelText, defaultVal)
     return Box, Btn
 end
 
+local function CreateToggleBtn(btnText)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -6, 0, 38)
+    Btn.Text = btnText
+    Btn.TextColor3 = TEXT_COLOR
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.GothamBold
+    Btn.BackgroundColor3 = CARD_COLOR
+    Btn.Parent = PlayerPage
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Btn
+
+    return Btn
+end
+
 -- 1. السرعة
 local SpeedBox, SpeedBtn = CreateInputRow("السرعة:", 16)
 SpeedBtn.MouseButton1Click:Connect(function()
@@ -285,8 +300,8 @@ JumpBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. تثبيت الكاميرا (FOV)
-local FovBox, FovBtn = CreateInputRow("مدى الرؤية (FOV):", 70)
+-- 3. مدى الرؤية (FOV)
+local FovBox, FovBtn = CreateInputRow("مدى الرؤية:", 70)
 FovBtn.MouseButton1Click:Connect(function()
     local val = tonumber(FovBox.Text)
     if val then
@@ -294,79 +309,7 @@ FovBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local function CreateToggleBtn(btnText)
-    local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -6, 0, 38)
-    Btn.Text = btnText
-    Btn.TextColor3 = TEXT_COLOR
-    Btn.TextSize = 13
-    Btn.Font = Enum.Font.GothamBold
-    Btn.BackgroundColor3 = CARD_COLOR
-    Btn.Parent = PlayerPage
-
-    local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 8)
-    BtnCorner.Parent = Btn
-
-    return Btn
-end
-
--- 4. الرؤية الليلية (Fullbright)
-local fullbright = false
-local FullbrightBtn = CreateToggleBtn("الرؤية الليلية: معطل")
-FullbrightBtn.MouseButton1Click:Connect(function()
-    fullbright = not fullbright
-    FullbrightBtn.Text = "الرؤية الليلية: " .. (fullbright and "مفعل 🟢" or "معطل 🔴")
-    FullbrightBtn.TextColor3 = fullbright and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-    
-    if fullbright then
-        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 14
-    else
-        Lighting.Ambient = Color3.fromRGB(128, 128, 128)
-        Lighting.Brightness = 1
-    end
-end)
-
--- 5. تخطي الجدران (Noclip)
-local noclip = false
-local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل")
-NoclipBtn.MouseButton1Click:Connect(function()
-    noclip = not noclip
-    NoclipBtn.Text = "تخطي الجدران: " .. (noclip and "مفعل 🟢" or "معطل 🔴")
-    NoclipBtn.TextColor3 = noclip and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-end)
-
-RunService.Stepped:Connect(function()
-    if noclip and LocalPlayer.Character then
-        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-end)
-
--- 6. قفز لانهائي (Infinite Jump)
-local infJump = false
-local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل")
-InfJumpBtn.MouseButton1Click:Connect(function()
-    infJump = not infJump
-    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل 🟢" or "معطل 🔴")
-    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-end)
-
-UserInputService.JumpRequest:Connect(function()
-    if infJump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
----------------------------------------------------------
--- ANXAM HUB v1.0 | PART 2 / 2
----------------------------------------------------------
-
--- 3. الطيران (Fly)
+-- 4. سرعة الطيران
 local FlyBox, FlyBtn = CreateInputRow("سرعة الطيران:", 50)
 local flying = false
 local flyBodyVel, flyBodyGyro
@@ -406,24 +349,7 @@ FlyBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-local function CreateToggleBtn(btnText)
-    local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -6, 0, 38)
-    Btn.Text = btnText
-    Btn.TextColor3 = TEXT_COLOR
-    Btn.TextSize = 13
-    Btn.Font = Enum.Font.GothamBold
-    Btn.BackgroundColor3 = CARD_COLOR
-    Btn.Parent = PlayerPage
-
-    local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 8)
-    BtnCorner.Parent = Btn
-
-    return Btn
-end
-
--- 4. الرؤية الليلية (Fullbright)
+-- 5. الرؤية الليلية (Fullbright)
 local fullbright = false
 local FullbrightBtn = CreateToggleBtn("الرؤية الليلية: معطل")
 FullbrightBtn.MouseButton1Click:Connect(function()
@@ -441,7 +367,7 @@ FullbrightBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 5. تخطي الجدران (Noclip)
+-- 6. تخطي الجدران (Noclip)
 local noclip = false
 local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل")
 NoclipBtn.MouseButton1Click:Connect(function()
@@ -460,7 +386,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 6. قفز لانهائي (Infinite Jump)
+-- 7. قفز لانهائي (Infinite Jump)
 local infJump = false
 local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل")
 InfJumpBtn.MouseButton1Click:Connect(function()
@@ -475,7 +401,7 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- 7. إعادة تعيين الشخصية (Reset)
+-- 8. إعادة تعيين الشخصية (Reset)
 local ResetBtn = CreateToggleBtn("إعادة تعيين الشخصية (Reset)")
 ResetBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 30)
 ResetBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
