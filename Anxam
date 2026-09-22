@@ -1,4 +1,4 @@
--- إنشاء الشاشة الرئيسية
+-- ANXAM HUB v1.0 | Ultra Sleek Edition
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- حذف الواجهة القديمة إذا كانت موجودة لمنع التكرار
+-- تنظيف الواجهات القديمة
 if PlayerGui:FindFirstChild("AnxamCustomUI") then
     PlayerGui.AnxamCustomUI:Destroy()
 end
@@ -17,113 +17,142 @@ ScreenGui.Name = "AnxamCustomUI"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
 
--- الإطار الرئيسي (Main Frame)
+-- الألوان الرئيسية (Cyber Dark Theme)
+local BG_COLOR = Color3.fromRGB(15, 15, 22)
+local CARD_COLOR = Color3.fromRGB(24, 25, 36)
+local ACCENT_BLUE = Color3.fromRGB(0, 170, 255)
+local ACCENT_HOVER = Color3.fromRGB(0, 200, 255)
+local TEXT_COLOR = Color3.fromRGB(240, 240, 245)
+
+-- الإطار الرئيسي
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 550, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -275, 0.5, -160)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+MainFrame.Size = UDim2.new(0, 560, 0, 330)
+MainFrame.Position = UDim2.new(0.5, -280, 0.5, -165)
+MainFrame.BackgroundColor3 = BG_COLOR
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Visible = true
+MainFrame.ClipsDescendants = true
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 10)
+MainCorner.CornerRadius = UDim.new(0, 12)
 MainCorner.Parent = MainFrame
 
--- شريط علوي (Header)
+-- إطار نيون حول الشاشة (Stroke)
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = ACCENT_BLUE
+MainStroke.Thickness = 1.5
+MainStroke.Transparency = 0.4
+MainStroke.Parent = MainFrame
+
+-- الشريط العلوي
 local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1, 0, 0, 40)
-TopBar.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
+TopBar.Size = UDim2.new(1, 0, 0, 42)
+TopBar.BackgroundColor3 = Color3.fromRGB(20, 21, 30)
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
 
-local TopCorner = Instance.new("UICorner")
-TopCorner.CornerRadius = UDim.new(0, 10)
-TopCorner.Parent = TopBar
-
--- عنوان القائمة
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "ANXAM HUB v1.0 | Reef Military"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 16
-Title.Font = Enum.Font.SourceSansBold
+Title.Text = "⚡ ANXAM HUB v1.0 | Reef Military"
+Title.TextColor3 = TEXT_COLOR
+Title.TextSize = 15
+Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
 Title.Parent = TopBar
 
--- زر الإغلاق (X)
+-- زر الإغلاق X
 local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -35, 0, 5)
-CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
-CloseBtn.TextSize = 18
-CloseBtn.Font = Enum.Font.SourceSansBold
-CloseBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+CloseBtn.Size = UDim2.new(0, 28, 0, 28)
+CloseBtn.Position = UDim2.new(1, -34, 0, 7)
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.BackgroundColor3 = Color3.fromRGB(35, 30, 40)
 CloseBtn.Parent = TopBar
 
 local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.CornerRadius = UDim.new(0, 8)
 CloseCorner.Parent = CloseBtn
 
--- زر التصغير (-)
+-- زر التصغير -
 local MinimizeBtn = Instance.new("TextButton")
-MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
-MinimizeBtn.Position = UDim2.new(1, -70, 0, 5)
-MinimizeBtn.Text = "-"
-MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinimizeBtn.TextSize = 22
-MinimizeBtn.Font = Enum.Font.SourceSansBold
-MinimizeBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+MinimizeBtn.Size = UDim2.new(0, 28, 0, 28)
+MinimizeBtn.Position = UDim2.new(1, -68, 0, 7)
+MinimizeBtn.Text = "─"
+MinimizeBtn.TextColor3 = TEXT_COLOR
+MinimizeBtn.TextSize = 12
+MinimizeBtn.Font = Enum.Font.GothamBold
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 MinimizeBtn.Parent = TopBar
 
 local MiniBtnCorner = Instance.new("UICorner")
-MiniBtnCorner.CornerRadius = UDim.new(0, 6)
+MiniBtnCorner.CornerRadius = UDim.new(0, 8)
 MiniBtnCorner.Parent = MinimizeBtn
 
--- زر التبديل الصغير (Toggle Button)
+-- الزر الصغير العائم (Mini Toggle)
 local MiniToggle = Instance.new("TextButton")
 MiniToggle.Name = "MiniToggle"
-MiniToggle.Size = UDim2.new(0, 120, 0, 35)
-MiniToggle.Position = UDim2.new(0.02, 0, 0.2, 0)
-MiniToggle.Text = "ANXAM HUB"
-MiniToggle.TextColor3 = Color3.fromRGB(0, 170, 255)
-MiniToggle.TextSize = 14
-MiniToggle.Font = Enum.Font.SourceSansBold
-MiniToggle.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+MiniToggle.Size = UDim2.new(0, 130, 0, 38)
+MiniToggle.Position = UDim2.new(0.02, 0, 0.15, 0)
+MiniToggle.Text = "⚡ ANXAM HUB"
+MiniToggle.TextColor3 = ACCENT_BLUE
+MiniToggle.TextSize = 13
+MiniToggle.Font = Enum.Font.GothamBold
+MiniToggle.BackgroundColor3 = BG_COLOR
 MiniToggle.Active = true
 MiniToggle.Draggable = true
 MiniToggle.Visible = false
 MiniToggle.Parent = ScreenGui
 
 local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 8)
+ToggleCorner.CornerRadius = UDim.new(0, 10)
 ToggleCorner.Parent = MiniToggle
 
+local ToggleStroke = Instance.new("UIStroke")
+ToggleStroke.Color = ACCENT_BLUE
+ToggleStroke.Thickness = 1.5
+ToggleStroke.Parent = MiniToggle
+
+-- أنيميشن فتح وإغلاق الواجهة
 MiniToggle.MouseButton1Click:Connect(function()
     MiniToggle.Visible = false
     MainFrame.Visible = true
+    MainFrame.Size = UDim2.new(0, 0, 0, 0)
+    MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 560, 0, 330),
+        Position = UDim2.new(0.5, -280, 0.5, -165)
+    }):Play()
 end)
 
 MinimizeBtn.MouseButton1Click:Connect(function()
-    MainFrame.Visible = false
-    MiniToggle.Visible = true
+    local tw = TweenService:Create(MainFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    tw:Play()
+    tw.Completed:Connect(function()
+        MainFrame.Visible = false
+        MiniToggle.Visible = true
+    end)
 end)
 
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- شريط التبويبات (Tab Bar)
+-- شريط التبويبات
 local TabBar = Instance.new("Frame")
-TabBar.Size = UDim2.new(0, 130, 1, -50)
-TabBar.Position = UDim2.new(0, 10, 0, 45)
-TabBar.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+TabBar.Size = UDim2.new(0, 135, 1, -52)
+TabBar.Position = UDim2.new(0, 8, 0, 46)
+TabBar.BackgroundColor3 = Color3.fromRGB(18, 19, 26)
 TabBar.Parent = MainFrame
 
 local TabCorner = Instance.new("UICorner")
@@ -132,14 +161,20 @@ TabCorner.Parent = TabBar
 
 local TabLayout = Instance.new("UIListLayout")
 TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-TabLayout.Padding = UDim.new(0, 5)
+TabLayout.Padding = UDim.new(0, 6)
 TabLayout.Parent = TabBar
 
--- حاوية الصفحات (Page Container)
+local TabPadding = Instance.new("UIPadding")
+TabPadding.PaddingTop = UDim.new(0, 6)
+TabPadding.PaddingLeft = UDim.new(0, 6)
+TabPadding.PaddingRight = UDim.new(0, 6)
+TabPadding.Parent = TabBar
+
+-- حاوية المحتوى
 local Container = Instance.new("Frame")
-Container.Size = UDim2.new(1, -160, 1, -50)
-Container.Position = UDim2.new(0, 150, 0, 45)
-Container.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+Container.Size = UDim2.new(1, -157, 1, -52)
+Container.Position = UDim2.new(0, 149, 0, 46)
+Container.BackgroundColor3 = Color3.fromRGB(18, 19, 26)
 Container.Parent = MainFrame
 
 local ContainerCorner = Instance.new("UICorner")
@@ -148,34 +183,48 @@ ContainerCorner.Parent = Container
 
 local Tabs = {"اللاعب", "الأنيميشنات", "استهداف", "المواقع", "قائمة جديدة"}
 local Pages = {}
+local TabButtons = {}
 
 for i, tabName in ipairs(Tabs) do
     local Page = Instance.new("ScrollingFrame")
-    Page.Size = UDim2.new(1, -10, 1, -10)
-    Page.Position = UDim2.new(0, 5, 0, 5)
+    Page.Size = UDim2.new(1, -12, 1, -12)
+    Page.Position = UDim2.new(0, 6, 0, 6)
     Page.BackgroundTransparency = 1
     Page.Visible = (i == 1)
-    Page.ScrollBarThickness = 4
-    Page.CanvasSize = UDim2.new(0, 0, 0, 320)
+    Page.ScrollBarThickness = 3
+    Page.ScrollBarImageColor3 = ACCENT_BLUE
+    Page.CanvasSize = UDim2.new(0, 0, 0, 360)
     Page.Parent = Container
     Pages[tabName] = Page
 
     local TabBtn = Instance.new("TextButton")
-    TabBtn.Size = UDim2.new(1, 0, 0, 35)
+    TabBtn.Size = UDim2.new(1, 0, 0, 36)
     TabBtn.Text = tabName
-    TabBtn.TextColor3 = (i == 1) and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(200, 200, 200)
-    TabBtn.TextSize = 14
-    TabBtn.Font = Enum.Font.SourceSansBold
-    TabBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    TabBtn.TextColor3 = (i == 1) and ACCENT_BLUE or Color3.fromRGB(160, 160, 175)
+    TabBtn.TextSize = 13
+    TabBtn.Font = Enum.Font.GothamBold
+    TabBtn.BackgroundColor3 = (i == 1) and CARD_COLOR or Color3.fromRGB(22, 23, 32)
     TabBtn.Parent = TabBar
 
     local BtnCorner = Instance.new("UICorner")
     BtnCorner.CornerRadius = UDim.new(0, 6)
     BtnCorner.Parent = TabBtn
 
+    TabButtons[tabName] = TabBtn
+
     TabBtn.MouseButton1Click:Connect(function()
-        for _, p in pairs(Pages) do p.Visible = false end
+        for name, p in pairs(Pages) do
+            p.Visible = false
+            TweenService:Create(TabButtons[name], TweenInfo.new(0.2), {
+                BackgroundColor3 = Color3.fromRGB(22, 23, 32),
+                TextColor3 = Color3.fromRGB(160, 160, 175)
+            }):Play()
+        end
         Pages[tabName].Visible = true
+        TweenService:Create(TabBtn, TweenInfo.new(0.2), {
+            BackgroundColor3 = CARD_COLOR,
+            TextColor3 = ACCENT_BLUE
+        }):Play()
     end)
 end
 
@@ -189,61 +238,60 @@ PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PageLayout.Padding = UDim.new(0, 8)
 PageLayout.Parent = PlayerPage
 
-local function CreateInputRow(labelText, defaultVal, placeholderText)
+local function CreateInputRow(labelText, defaultVal)
     local Row = Instance.new("Frame")
-    Row.Size = UDim2.new(1, -10, 0, 40)
-    Row.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Row.Size = UDim2.new(1, -6, 0, 42)
+    Row.BackgroundColor3 = CARD_COLOR
     Row.Parent = PlayerPage
 
     local RowCorner = Instance.new("UICorner")
-    RowCorner.CornerRadius = UDim.new(0, 6)
+    RowCorner.CornerRadius = UDim.new(0, 8)
     RowCorner.Parent = Row
 
     local Label = Instance.new("TextLabel")
     Label.Size = UDim2.new(0, 110, 1, 0)
-    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Position = UDim2.new(0, 12, 0, 0)
     Label.Text = labelText
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.TextSize = 14
-    Label.Font = Enum.Font.SourceSansBold
+    Label.TextColor3 = TEXT_COLOR
+    Label.TextSize = 13
+    Label.Font = Enum.Font.GothamBold
     Label.TextXAlignment = Enum.TextXAlignment.Left
     Label.BackgroundTransparency = 1
     Label.Parent = Row
 
     local Box = Instance.new("TextBox")
-    Box.Size = UDim2.new(0, 80, 0, 28)
+    Box.Size = UDim2.new(0, 85, 0, 28)
     Box.Position = UDim2.new(0, 125, 0.5, -14)
     Box.Text = tostring(defaultVal)
-    Box.PlaceholderText = placeholderText
-    Box.TextColor3 = Color3.fromRGB(0, 170, 255)
-    Box.TextSize = 14
-    Box.Font = Enum.Font.SourceSansBold
-    Box.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+    Box.TextColor3 = ACCENT_BLUE
+    Box.TextSize = 13
+    Box.Font = Enum.Font.GothamBold
+    Box.BackgroundColor3 = Color3.fromRGB(16, 17, 24)
     Box.Parent = Row
 
     local BoxCorner = Instance.new("UICorner")
-    BoxCorner.CornerRadius = UDim.new(0, 4)
+    BoxCorner.CornerRadius = UDim.new(0, 6)
     BoxCorner.Parent = Box
 
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(0, 110, 0, 28)
-    Btn.Position = UDim2.new(1, -120, 0.5, -14)
+    Btn.Size = UDim2.new(0, 100, 0, 28)
+    Btn.Position = UDim2.new(1, -108, 0.5, -14)
     Btn.Text = "تطبيق"
     Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Btn.TextSize = 13
-    Btn.Font = Enum.Font.SourceSansBold
-    Btn.BackgroundColor3 = Color3.fromRGB(0, 140, 220)
+    Btn.TextSize = 12
+    Btn.Font = Enum.Font.GothamBold
+    Btn.BackgroundColor3 = ACCENT_BLUE
     Btn.Parent = Row
 
     local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 4)
+    BtnCorner.CornerRadius = UDim.new(0, 6)
     BtnCorner.Parent = Btn
 
     return Box, Btn
 end
 
 -- 1. السرعة
-local SpeedBox, SpeedBtn = CreateInputRow("السرعة:", 16, "العدد")
+local SpeedBox, SpeedBtn = CreateInputRow("السرعة:", 16)
 SpeedBtn.MouseButton1Click:Connect(function()
     local val = tonumber(SpeedBox.Text)
     if val and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -252,7 +300,7 @@ SpeedBtn.MouseButton1Click:Connect(function()
 end)
 
 -- 2. قوة القفز
-local JumpBox, JumpBtn = CreateInputRow("قوة النط:", 50, "العدد")
+local JumpBox, JumpBtn = CreateInputRow("قوة النط:", 50)
 JumpBtn.MouseButton1Click:Connect(function()
     local val = tonumber(JumpBox.Text)
     if val and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -261,33 +309,70 @@ JumpBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. سرعة الطيران
-local FlyBox, FlyBtn = CreateInputRow("سرعة الطيران:", 50, "العدد")
+-- 3. الطيران
+local FlyBox, FlyBtn = CreateInputRow("سرعة الطيران:", 50)
+local flying = false
+local flyBodyVel, flyBodyGyro
 
-local function CreateNormalButton(btnText)
+FlyBtn.MouseButton1Click:Connect(function()
+    flying = not flying
+    FlyBtn.Text = flying and "إيقاف" or "طيران"
+    FlyBtn.BackgroundColor3 = flying and Color3.fromRGB(230, 60, 70) or ACCENT_BLUE
+
+    local char = LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local root = char.HumanoidRootPart
+
+    if flying then
+        flyBodyVel = Instance.new("BodyVelocity")
+        flyBodyVel.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+        flyBodyVel.Velocity = Vector3.new(0, 0, 0)
+        flyBodyVel.Parent = root
+
+        flyBodyGyro = Instance.new("BodyGyro")
+        flyBodyGyro.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+        flyBodyGyro.CFrame = root.CFrame
+        flyBodyGyro.Parent = root
+
+        task.spawn(function()
+            while flying and char and char:FindFirstChild("HumanoidRootPart") do
+                local speed = tonumber(FlyBox.Text) or 50
+                local cam = workspace.CurrentCamera
+                flyBodyGyro.CFrame = cam.CFrame
+                flyBodyVel.Velocity = cam.CFrame.LookVector * speed
+                RunService.RenderStepped:Wait()
+            end
+        end)
+    else
+        if flyBodyVel then flyBodyVel:Destroy() end
+        if flyBodyGyro then flyBodyGyro:Destroy() end
+    end
+end)
+
+local function CreateToggleBtn(btnText)
     local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -10, 0, 36)
+    Btn.Size = UDim2.new(1, -6, 0, 38)
     Btn.Text = btnText
-    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Btn.TextSize = 14
-    Btn.Font = Enum.Font.SourceSansBold
-    Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    Btn.TextColor3 = TEXT_COLOR
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.GothamBold
+    Btn.BackgroundColor3 = CARD_COLOR
     Btn.Parent = PlayerPage
 
     local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Btn
 
     return Btn
 end
 
--- 4. تخطي الجدران
+-- 4. تخطي الجدران (Noclip)
 local noclip = false
-local NoclipBtn = CreateNormalButton("تخطي الجدران (Noclip): معطل")
+local NoclipBtn = CreateToggleBtn("تخطي الجدران (Noclip): معطل")
 NoclipBtn.MouseButton1Click:Connect(function()
     noclip = not noclip
-    NoclipBtn.Text = "تخطي الجدران (Noclip): " .. (noclip and "مفعل" or "معطل")
-    NoclipBtn.TextColor3 = noclip and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 255, 255)
+    NoclipBtn.Text = "تخطي الجدران (Noclip): " .. (noclip and "مفعل 🟢" or "معطل 🔴")
+    NoclipBtn.TextColor3 = noclip and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
 end)
 
 RunService.Stepped:Connect(function()
@@ -300,13 +385,13 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 5. قفز لانهائي
+-- 5. قفز لانهائي (Infinite Jump)
 local infJump = false
-local InfJumpBtn = CreateNormalButton("قفز لانهائي: معطل")
+local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل")
 InfJumpBtn.MouseButton1Click:Connect(function()
     infJump = not infJump
-    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل" or "معطل")
-    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 255, 255)
+    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل 🟢" or "معطل 🔴")
+    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
 end)
 
 UserInputService.JumpRequest:Connect(function()
@@ -315,9 +400,10 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- 6. إعادة إنعاش الشخصية
-local ResetBtn = CreateNormalButton("إعادة تعيين الشخصية (Reset)")
-ResetBtn.BackgroundColor3 = Color3.fromRGB(55, 35, 40)
+-- 6. إعادة الإنعاش (Reset)
+local ResetBtn = CreateToggleBtn("إعادة تعيين الشخصية (Reset)")
+ResetBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 30)
+ResetBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 ResetBtn.MouseButton1Click:Connect(function()
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.Health = 0
