@@ -204,7 +204,7 @@ for i, tabName in ipairs(Tabs) do
 end
 
 ---------------------------------------------------------
--- محتويات تبويب "اللاعب" فقط
+-- محتويات تبويب "اللاعب"
 ---------------------------------------------------------
 local PlayerPage = Pages["اللاعب"]
 
@@ -305,44 +305,11 @@ FovBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. سرعة الطيران
-local FlyBox, FlyBtn = CreateInputRow("سرعة الطيران:", 50)
-local flying = false
-local flyBodyVel, flyBodyGyro
-
-FlyBtn.MouseButton1Click:Connect(function()
-    flying = not flying
-    FlyBtn.Text = flying and "إيقاف" or "طيران"
-    FlyBtn.BackgroundColor3 = flying and Color3.fromRGB(230, 60, 70) or ACCENT_BLUE
-
-    local char = LocalPlayer.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    local root = char.HumanoidRootPart
-
-    if flying then
-        flyBodyVel = Instance.new("BodyVelocity")
-        flyBodyVel.MaxForce = Vector3.new(1e9, 1e9, 1e9)
-        flyBodyVel.Velocity = Vector3.new(0, 0, 0)
-        flyBodyVel.Parent = root
-
-        flyBodyGyro = Instance.new("BodyGyro")
-        flyBodyGyro.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
-        flyBodyGyro.CFrame = root.CFrame
-        flyBodyGyro.Parent = root
-
-        task.spawn(function()
-            while flying and char and char:FindFirstChild("HumanoidRootPart") do
-                local speed = tonumber(FlyBox.Text) or 50
-                local cam = workspace.CurrentCamera
-                flyBodyGyro.CFrame = cam.CFrame
-                flyBodyVel.Velocity = cam.CFrame.LookVector * speed
-                RunService.RenderStepped:Wait()
-            end
-        end)
-    else
-        if flyBodyVel then flyBodyVel:Destroy() end
-        if flyBodyGyro then flyBodyGyro:Destroy() end
-    end
+-- 4. زر Fly V3
+local FlyV3Btn = CreateToggleBtn("تشغيل Fly V3 🚀")
+FlyV3Btn.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
+FlyV3Btn.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
 -- 5. الرؤية الليلية
