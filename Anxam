@@ -1,4 +1,4 @@
--- ANXAM HUB v5.0 | Reef Military (15 Animations FE)
+-- ANXAM HUB v6.0 | Reef Military (Target System)
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -6,7 +6,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- تنظيف الواجهات القديمة لمنع التكرار
+-- تنظيف الواجهات القديمة
 if PlayerGui:FindFirstChild("AnxamCustomUI") then
     PlayerGui.AnxamCustomUI:Destroy()
 end
@@ -55,7 +55,7 @@ TopBar.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "⚡ ANXAM HUB v5.0 | 15 Animations"
+Title.Text = "⚡ ANXAM HUB v6.0 | Target System"
 Title.TextColor3 = TEXT_COLOR
 Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
@@ -157,30 +157,22 @@ local Pages = {}
 local TabButtons = {}
 
 for i, tabName in ipairs(Tabs) do
-    local Page = Instance.new("ScrollingFrame")
+    local Page = Instance.new("Frame")
     Page.Name = tabName .. "_Page"
     Page.Size = UDim2.new(1, -12, 1, -12)
     Page.Position = UDim2.new(0, 6, 0, 6)
     Page.BackgroundTransparency = 1
-    Page.Visible = (i == 2) -- يفتح تبويب الأنيميشنات تلقائياً
-    Page.ScrollBarThickness = 4
-    Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 750) -- مساحة تتسع لـ 15 زر
+    Page.Visible = (i == 3) -- فتح تبويب استهداف تلقائياً
     Page.Parent = Container
     Pages[tabName] = Page
-
-    local PageLayout = Instance.new("UIListLayout")
-    PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    PageLayout.Padding = UDim.new(0, 8)
-    PageLayout.Parent = Page
 
     local TabBtn = Instance.new("TextButton")
     TabBtn.Size = UDim2.new(1, 0, 0, 36)
     TabBtn.Text = tabName
-    TabBtn.TextColor3 = (i == 2) and ACCENT_BLUE or Color3.fromRGB(160, 160, 175)
+    TabBtn.TextColor3 = (i == 3) and ACCENT_BLUE or Color3.fromRGB(160, 160, 175)
     TabBtn.TextSize = 13
     TabBtn.Font = Enum.Font.GothamBold
-    TabBtn.BackgroundColor3 = (i == 2) and CARD_COLOR or Color3.fromRGB(22, 23, 32)
+    TabBtn.BackgroundColor3 = (i == 3) and CARD_COLOR or Color3.fromRGB(22, 23, 32)
     TabBtn.Parent = TabBar
 
     local BtnCorner = Instance.new("UICorner")
@@ -202,9 +194,33 @@ for i, tabName in ipairs(Tabs) do
 end
 
 ---------------------------------------------------------
+-- دالة إنشاء الأزرار العادية
+---------------------------------------------------------
+local function CreateToggleBtn(btnText, parentPage)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -6, 0, 38)
+    Btn.Text = btnText
+    Btn.TextColor3 = TEXT_COLOR
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.GothamBold
+    Btn.BackgroundColor3 = CARD_COLOR
+    Btn.Parent = parentPage
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Btn
+
+    return Btn
+end
+
+---------------------------------------------------------
 -- 1. تبويب اللاعب
 ---------------------------------------------------------
 local PlayerPage = Pages["اللاعب"]
+local PlayerLayout = Instance.new("UIListLayout")
+PlayerLayout.SortOrder = Enum.SortOrder.LayoutOrder
+PlayerLayout.Padding = UDim.new(0, 8)
+PlayerLayout.Parent = PlayerPage
 
 local function CreateInputRow(labelText, defaultVal, callback)
     local Row = Instance.new("Frame")
@@ -261,23 +277,6 @@ local function CreateInputRow(labelText, defaultVal, callback)
     end)
 end
 
-local function CreateToggleBtn(btnText, parentPage)
-    local Btn = Instance.new("TextButton")
-    Btn.Size = UDim2.new(1, -6, 0, 38)
-    Btn.Text = btnText
-    Btn.TextColor3 = TEXT_COLOR
-    Btn.TextSize = 13
-    Btn.Font = Enum.Font.GothamBold
-    Btn.BackgroundColor3 = CARD_COLOR
-    Btn.Parent = parentPage or PlayerPage
-
-    local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 8)
-    BtnCorner.Parent = Btn
-
-    return Btn
-end
-
 CreateInputRow("السرعة:", 16, function(val)
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.WalkSpeed = val
@@ -297,42 +296,21 @@ FlyBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
-local infJump = false
-local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل", PlayerPage)
-InfJumpBtn.MouseButton1Click:Connect(function()
-    infJump = not infJump
-    InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل 🟢" or "معطل 🔴")
-    InfJumpBtn.TextColor3 = infJump and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-end)
-
-UserInputService.JumpRequest:Connect(function()
-    if infJump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-
-local noclip = false
-local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل", PlayerPage)
-NoclipBtn.MouseButton1Click:Connect(function()
-    noclip = not noclip
-    NoclipBtn.Text = "تخطي الجدران: " .. (noclip and "مفعل 🟢" or "معطل 🔴")
-    NoclipBtn.TextColor3 = noclip and Color3.fromRGB(0, 230, 130) or TEXT_COLOR
-end)
-
-RunService.Stepped:Connect(function()
-    if noclip and LocalPlayer.Character then
-        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = false
-            end
-        end
-    end
-end)
-
 ---------------------------------------------------------
--- 2. تبويب الأنيميشنات (15 أنيميشن كاملة)
+-- 2. تبويب الأنيميشنات
 ---------------------------------------------------------
 local AnimPage = Pages["الأنيميشنات"]
+local AnimScroll = Instance.new("ScrollingFrame")
+AnimScroll.Size = UDim2.new(1, 0, 1, 0)
+AnimScroll.BackgroundTransparency = 1
+AnimScroll.ScrollBarThickness = 4
+AnimScroll.CanvasSize = UDim2.new(0, 0, 0, 750)
+AnimScroll.Parent = AnimPage
+
+local AnimLayout = Instance.new("UIListLayout")
+AnimLayout.SortOrder = Enum.SortOrder.LayoutOrder
+AnimLayout.Padding = UDim.new(0, 8)
+AnimLayout.Parent = AnimScroll
 
 local activeTrack = nil
 
@@ -363,7 +341,7 @@ StopAnimBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
 StopAnimBtn.TextSize = 13
 StopAnimBtn.Font = Enum.Font.GothamBold
 StopAnimBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 25)
-StopAnimBtn.Parent = AnimPage
+StopAnimBtn.Parent = AnimScroll
 
 local StopCorner = Instance.new("UICorner")
 StopCorner.CornerRadius = UDim.new(0, 8)
@@ -373,7 +351,6 @@ StopAnimBtn.MouseButton1Click:Connect(function()
     PlayAnimation(0)
 end)
 
--- قائمة بـ 15 زر أنيميشن
 local AnimationsList = {
     {Name = "1. 💥 Dab (داب)", ID = 248263260},
     {Name = "2. 🛐 Crouch (جثو / انحناء)", ID = 180436334},
@@ -393,98 +370,214 @@ local AnimationsList = {
 }
 
 for _, animData in ipairs(AnimationsList) do
-    local Btn = CreateToggleBtn(animData.Name, AnimPage)
+    local Btn = CreateToggleBtn(animData.Name, AnimScroll)
     Btn.MouseButton1Click:Connect(function()
         PlayAnimation(animData.ID)
     end)
 end
 
 ---------------------------------------------------------
--- 3. تبويب استهداف
+-- 3. تبويب استهداف (التعديل المطلوب حسب الرسمة)
 ---------------------------------------------------------
 local TargetPage = Pages["استهداف"]
-local SelectedPlayer = nil
+local TargetPlayerSelected = nil
+local CurrentHighlight = nil
+local IsSpectating = false
 
-local TargetDropdown = Instance.new("TextButton")
-TargetDropdown.Size = UDim2.new(1, -6, 0, 36)
-TargetDropdown.Text = "اختر لاعباً من القائمة... 🔻"
-TargetDropdown.TextColor3 = TEXT_COLOR
-TargetDropdown.TextSize = 13
-TargetDropdown.Font = Enum.Font.GothamBold
-TargetDropdown.BackgroundColor3 = CARD_COLOR
-TargetDropdown.Parent = TargetPage
+-- 🔴 [المربع الأحمر]: صندوق كتابة والبحث عن الاسم
+local SearchBox = Instance.new("TextBox")
+SearchBox.Name = "SearchBox"
+SearchBox.Size = UDim2.new(0.52, 0, 0, 36)
+SearchBox.Position = UDim2.new(0.48, 0, 0, 0)
+SearchBox.PlaceholderText = "🔍 اكتب اسم اللاعب هنا..."
+SearchBox.PlaceholderColor3 = Color3.fromRGB(130, 130, 145)
+SearchBox.Text = ""
+SearchBox.TextColor3 = TEXT_COLOR
+SearchBox.TextSize = 12
+SearchBox.Font = Enum.Font.GothamBold
+SearchBox.BackgroundColor3 = CARD_COLOR
+SearchBox.Parent = TargetPage
 
-local DropCorner = Instance.new("UICorner")
-DropCorner.CornerRadius = UDim.new(0, 8)
-DropCorner.Parent = TargetDropdown
+local SearchCorner = Instance.new("UICorner")
+SearchCorner.CornerRadius = UDim.new(0, 8)
+SearchCorner.Parent = SearchBox
 
-local DropList = Instance.new("ScrollingFrame")
-DropList.Size = UDim2.new(1, -6, 0, 100)
-DropList.BackgroundColor3 = Color3.fromRGB(20, 21, 30)
-DropList.Visible = false
-DropList.ScrollBarThickness = 3
-DropList.Parent = TargetPage
+-- 🟡 [المربع الأصفر]: قائمة طويلة بكل اللاعبين في السيرفر
+local ServerPlayersList = Instance.new("ScrollingFrame")
+ServerPlayersList.Name = "ServerPlayersList"
+ServerPlayersList.Size = UDim2.new(0.52, 0, 1, -44)
+ServerPlayersList.Position = UDim2.new(0.48, 0, 0, 44)
+ServerPlayersList.BackgroundColor3 = Color3.fromRGB(20, 21, 30)
+ServerPlayersList.ScrollBarThickness = 4
+ServerPlayersList.ScrollBarImageColor3 = ACCENT_BLUE
+ServerPlayersList.Parent = TargetPage
 
-local DropLayout = Instance.new("UIListLayout")
-DropLayout.SortOrder = Enum.SortOrder.LayoutOrder
-DropLayout.Padding = UDim.new(0, 4)
-DropLayout.Parent = DropList
+local ListCorner = Instance.new("UICorner")
+ListCorner.CornerRadius = UDim.new(0, 8)
+ListCorner.Parent = ServerPlayersList
 
-local function UpdatePlayerList()
-    for _, child in pairs(DropList:GetChildren()) do
-        if child:IsA("TextButton") then child:Destroy() end
-    end
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer then
-            local Btn = Instance.new("TextButton")
-            Btn.Size = UDim2.new(1, 0, 0, 28)
-            Btn.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
-            Btn.TextColor3 = TEXT_COLOR
-            Btn.TextSize = 12
-            Btn.Font = Enum.Font.Gotham
-            Btn.BackgroundColor3 = CARD_COLOR
-            Btn.Parent = DropList
+local ListLayout = Instance.new("UIListLayout")
+ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+ListLayout.Padding = UDim.new(0, 4)
+ListLayout.Parent = ServerPlayersList
 
-            Btn.MouseButton1Click:Connect(function()
-                SelectedPlayer = plr
-                TargetDropdown.Text = "المستهدف: " .. plr.DisplayName
-                DropList.Visible = false
-            end)
-        end
-    end
-end
+-- 🟣 [المربع البنفسجي]: صورة اللاعب المستهدف (Avatar / Skin)
+local AvatarFrame = Instance.new("Frame")
+AvatarFrame.Name = "AvatarFrame"
+AvatarFrame.Size = UDim2.new(0.44, 0, 0, 125)
+AvatarFrame.Position = UDim2.new(0, 0, 0, 0)
+AvatarFrame.BackgroundColor3 = CARD_COLOR
+AvatarFrame.Parent = TargetPage
 
-TargetDropdown.MouseButton1Click:Connect(function()
-    DropList.Visible = not DropList.Visible
-    if DropList.Visible then UpdatePlayerList() end
-end)
+local AvatarCorner = Instance.new("UICorner")
+AvatarCorner.CornerRadius = UDim.new(0, 8)
+AvatarCorner.Parent = AvatarFrame
 
-local TeleportToBtn = CreateToggleBtn("انتقال إلى اللاعب المستهدف 📍", TargetPage)
-TeleportToBtn.MouseButton1Click:Connect(function()
-    if SelectedPlayer and SelectedPlayer.Character and SelectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = SelectedPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
-        end
-    end
-end)
+local AvatarImage = Instance.new("ImageLabel")
+AvatarImage.Size = UDim2.new(0, 105, 0, 105)
+AvatarImage.Position = UDim2.new(0.5, -52, 0.5, -52)
+AvatarImage.BackgroundTransparency = 1
+AvatarImage.Image = "rbxassetid://0"
+AvatarImage.Parent = AvatarFrame
+
+local TargetNameLabel = Instance.new("TextLabel")
+TargetNameLabel.Size = UDim2.new(1, 0, 0, 20)
+TargetNameLabel.Position = UDim2.new(0, 0, 1, -20)
+TargetNameLabel.Text = "لم يتم اختيار لاعب"
+TargetNameLabel.TextColor3 = Color3.fromRGB(170, 170, 185)
+TargetNameLabel.TextSize = 11
+TargetNameLabel.Font = Enum.Font.Gotham
+TargetNameLabel.BackgroundTransparency = 1
+TargetNameLabel.Parent = AvatarFrame
+
+-- 🔵 [المستطيلات الزرقاء الـ 3]: الأزرار الثلاثة
+local ButtonsContainer = Instance.new("Frame")
+ButtonsContainer.Size = UDim2.new(0.44, 0, 1, -133)
+ButtonsContainer.Position = UDim2.new(0, 0, 0, 133)
+ButtonsContainer.BackgroundTransparency = 1
+ButtonsContainer.Parent = TargetPage
+
+local BtnLayout = Instance.new("UIListLayout")
+BtnLayout.SortOrder = Enum.SortOrder.LayoutOrder
+BtnLayout.Padding = UDim.new(0, 6)
+BtnLayout.Parent = ButtonsContainer
+
+-- 1. زر الانتقال
+local TPBtn = Instance.new("TextButton")
+TPBtn.Size = UDim2.new(1, 0, 0, 35)
+TPBtn.Text = "📍 انتقال إلى المستهدف"
+TPBtn.TextColor3 = TEXT_COLOR
+TPBtn.TextSize = 12
+TPBtn.Font = Enum.Font.GothamBold
+TPBtn.BackgroundColor3 = CARD_COLOR
+TPBtn.Parent = ButtonsContainer
+
+local TPCorner = Instance.new("UICorner")
+TPCorner.CornerRadius = UDim.new(0, 8)
+TPCorner.Parent = TPBtn
+
+-- 2. زر المشاهدة
+local SpectateBtn = Instance.new("TextButton")
+SpectateBtn.Size = UDim2.new(1, 0, 0, 35)
+SpectateBtn.Text = "👁️ مشاهدة المستهدف"
+SpectateBtn.TextColor3 = TEXT_COLOR
+SpectateBtn.TextSize = 12
+SpectateBtn.Font = Enum.Font.GothamBold
+SpectateBtn.BackgroundColor3 = CARD_COLOR
+SpectateBtn.Parent = ButtonsContainer
+
+local SpecCorner = Instance.new("UICorner")
+SpecCorner.CornerRadius = UDim.new(0, 8)
+SpecCorner.Parent = SpectateBtn
+
+-- 3. زر التحديد (حجم أحمر حوله)
+local HighlightBtn = Instance.new("TextButton")
+HighlightBtn.Size = UDim2.new(1, 0, 0, 35)
+HighlightBtn.Text = "🔴 تحديد المستهدف (أحمر)"
+HighlightBtn.TextColor3 = TEXT_COLOR
+HighlightBtn.TextSize = 12
+HighlightBtn.Font = Enum.Font.GothamBold
+HighlightBtn.BackgroundColor3 = CARD_COLOR
+HighlightBtn.Parent = ButtonsContainer
+
+local HLCorner = Instance.new("UICorner")
+HLCorner.CornerRadius = UDim.new(0, 8)
+HLCorner.Parent = HighlightBtn
 
 ---------------------------------------------------------
--- 4. تبويب المواقع
+-- منطق ووظائف الاستهداف
 ---------------------------------------------------------
-local LocPage = Pages["المواقع"]
+local function SelectTarget(plr)
+    TargetPlayerSelected = plr
+    TargetNameLabel.Text = plr.DisplayName .. " (@" .. plr.Name .. ")"
+    TargetNameLabel.TextColor3 = ACCENT_BLUE
 
-local Locations = {
-    {Name = "المقر الرئيسي (HQ)", Pos = Vector3.new(0, 50, 0)},
-    {Name = "منطقة الرصيف (Docks)", Pos = Vector3.new(150, 20, -200)},
-    {Name = "مهبط الهليكوبتر (Helipad)", Pos = Vector3.new(-100, 35, 100)},
-    {Name = "بوابة التفتيش (Gate)", Pos = Vector3.new(50, 15, -100)}
-}
-
-for _, loc in ipairs(Locations) do
-    local LocBtn = CreateToggleBtn("📌 " .. loc.Name, LocPage)
-    LocBtn.MouseButton1Click:Connect(function()
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(loc.Pos)
+    -- جلب سكن وصورة اللاعب
+    task.spawn(function()
+        local content, isLoaded = Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size150x150)
+        if isLoaded then
+            AvatarImage.Image = content
         end
     end)
 end
+
+local function RefreshServerList(filterText)
+    for _, child in pairs(ServerPlayersList:GetChildren()) do
+        if child:IsA("TextButton") then child:Destroy() end
+    end
+
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            if filterText == "" or string.find(string.lower(plr.Name), string.lower(filterText)) or string.find(string.lower(plr.DisplayName), string.lower(filterText)) then
+                local Btn = Instance.new("TextButton")
+                Btn.Size = UDim2.new(1, -6, 0, 30)
+                Btn.Text = "  " .. plr.DisplayName .. " (@" .. plr.Name .. ")"
+                Btn.TextColor3 = TEXT_COLOR
+                Btn.TextSize = 11
+                Btn.Font = Enum.Font.Gotham
+                Btn.TextXAlignment = Enum.TextXAlignment.Left
+                Btn.BackgroundColor3 = CARD_COLOR
+                Btn.Parent = ServerPlayersList
+
+                local BtnCorner = Instance.new("UICorner")
+                BtnCorner.CornerRadius = UDim.new(0, 6)
+                BtnCorner.Parent = Btn
+
+                Btn.MouseButton1Click:Connect(function()
+                    SelectTarget(plr)
+                end)
+            end
+        end
+    end
+end
+
+-- البحث التلقائي عند الكتابة
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    RefreshServerList(SearchBox.Text)
+end)
+
+-- تحديث السيرفر عند دخول/خروج لاعبين
+Players.PlayerAdded:Connect(function() RefreshServerList(SearchBox.Text) end)
+Players.PlayerRemoving:Connect(function() RefreshServerList(SearchBox.Text) end)
+RefreshServerList("")
+
+-- 1. كود زر الانتقال
+TPBtn.MouseButton1Click:Connect(function()
+    if TargetPlayerSelected and TargetPlayerSelected.Character and TargetPlayerSelected.Character:FindFirstChild("HumanoidRootPart") then
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = TargetPlayerSelected.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+        end
+    end
+end)
+
+-- 2. كود زر المشاهدة
+SpectateBtn.MouseButton1Click:Connect(function()
+    if IsSpectating then
+        IsSpectating = false
+        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        SpectateBtn.Text = "👁️ مشاهدة المستهدف"
+        SpectateBtn.BackgroundColor3 = CARD_COLOR
+    else
+        if TargetPlayerSelected and TargetPlayerSelected.Character and TargetPlayerSelected.Character:FindFirstChildOfClass("Humanoid") then
+            IsSpectating = true
+            workspace.CurrentCamera.CameraSubject = TargetPlayerSelecte
