@@ -1,4 +1,4 @@
--- ANXAM HUB v4.0 | Reef Military (FE Fixed & Working 100%)
+-- ANXAM HUB v5.0 | Reef Military (15 Animations FE)
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -55,7 +55,7 @@ TopBar.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "⚡ ANXAM HUB v4.0 | Reef Military"
+Title.Text = "⚡ ANXAM HUB v5.0 | 15 Animations"
 Title.TextColor3 = TEXT_COLOR
 Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
@@ -162,10 +162,10 @@ for i, tabName in ipairs(Tabs) do
     Page.Size = UDim2.new(1, -12, 1, -12)
     Page.Position = UDim2.new(0, 6, 0, 6)
     Page.BackgroundTransparency = 1
-    Page.Visible = (i == 1)
-    Page.ScrollBarThickness = 3
+    Page.Visible = (i == 2) -- يفتح تبويب الأنيميشنات تلقائياً
+    Page.ScrollBarThickness = 4
     Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 450)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 750) -- مساحة تتسع لـ 15 زر
     Page.Parent = Container
     Pages[tabName] = Page
 
@@ -177,10 +177,10 @@ for i, tabName in ipairs(Tabs) do
     local TabBtn = Instance.new("TextButton")
     TabBtn.Size = UDim2.new(1, 0, 0, 36)
     TabBtn.Text = tabName
-    TabBtn.TextColor3 = (i == 1) and ACCENT_BLUE or Color3.fromRGB(160, 160, 175)
+    TabBtn.TextColor3 = (i == 2) and ACCENT_BLUE or Color3.fromRGB(160, 160, 175)
     TabBtn.TextSize = 13
     TabBtn.Font = Enum.Font.GothamBold
-    TabBtn.BackgroundColor3 = (i == 1) and CARD_COLOR or Color3.fromRGB(22, 23, 32)
+    TabBtn.BackgroundColor3 = (i == 2) and CARD_COLOR or Color3.fromRGB(22, 23, 32)
     TabBtn.Parent = TabBar
 
     local BtnCorner = Instance.new("UICorner")
@@ -278,14 +278,12 @@ local function CreateToggleBtn(btnText, parentPage)
     return Btn
 end
 
--- السرعة
 CreateInputRow("السرعة:", 16, function(val)
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.WalkSpeed = val
     end
 end)
 
--- القفز
 CreateInputRow("قوة النط:", 50, function(val)
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.UseJumpPower = true
@@ -293,14 +291,12 @@ CreateInputRow("قوة النط:", 50, function(val)
     end
 end)
 
--- Fly V3
 local FlyBtn = CreateToggleBtn("تشغيل Fly V3 🚀", PlayerPage)
 FlyBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
 FlyBtn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
 end)
 
--- قفز لانهائي
 local infJump = false
 local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل", PlayerPage)
 InfJumpBtn.MouseButton1Click:Connect(function()
@@ -315,7 +311,6 @@ UserInputService.JumpRequest:Connect(function()
     end
 end)
 
--- تخطي الجدران (Noclip)
 local noclip = false
 local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل", PlayerPage)
 NoclipBtn.MouseButton1Click:Connect(function()
@@ -335,34 +330,79 @@ RunService.Stepped:Connect(function()
 end)
 
 ---------------------------------------------------------
--- 2. تبويب الأنيميشنات (تشغيل سكربت R6 Animations FE الشغال 100%)
+-- 2. تبويب الأنيميشنات (15 أنيميشن كاملة)
 ---------------------------------------------------------
 local AnimPage = Pages["الأنيميشنات"]
 
-local LoadR6Btn = CreateToggleBtn("🔥 تشغيل قائمه الرقصات والأنيميشنات (R6 FE)", AnimPage)
-LoadR6Btn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-LoadR6Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+local activeTrack = nil
 
-LoadR6Btn.MouseButton1Click:Connect(function()
-    -- سكربت R6 Animations FE شغال 100% ومجرب على كافة المحاكيات
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/جلب-سكربت-R6-الانيميشن/R6Animations.lua", true))()
+local function PlayAnimation(id)
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    if activeTrack then
+        activeTrack:Stop()
+        activeTrack = nil
+    end
+
+    if id == 0 then return end
+
+    local anim = Instance.new("Animation")
+    anim.AnimationId = "rbxassetid://" .. tostring(id)
+    activeTrack = hum:LoadAnimation(anim)
+    activeTrack.Priority = Enum.AnimationPriority.Action
+    activeTrack:Play()
+end
+
+local StopAnimBtn = Instance.new("TextButton")
+StopAnimBtn.Size = UDim2.new(1, -6, 0, 38)
+StopAnimBtn.Text = "🛑 إيقاف الأنيميشن"
+StopAnimBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+StopAnimBtn.TextSize = 13
+StopAnimBtn.Font = Enum.Font.GothamBold
+StopAnimBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 25)
+StopAnimBtn.Parent = AnimPage
+
+local StopCorner = Instance.new("UICorner")
+StopCorner.CornerRadius = UDim.new(0, 8)
+StopCorner.Parent = StopAnimBtn
+
+StopAnimBtn.MouseButton1Click:Connect(function()
+    PlayAnimation(0)
 end)
 
-local InfoText = Instance.new("TextLabel")
-InfoText.Size = UDim2.new(1, -6, 0, 80)
-InfoText.Text = "ملاحظة: اضغط على الزر الأرزق بالأعلى لتشغيل قائمة R6 Animation السوداء الموضحة بالصور. ستعمل جميع الحركات والرقصات وتظهر للجميع داخل السيرفر."
-InfoText.TextColor3 = Color3.fromRGB(160, 160, 175)
-InfoText.TextSize = 12
-InfoText.Font = Enum.Font.Gotham
-InfoText.TextWrapped = true
-InfoText.BackgroundTransparency = 1
-InfoText.Parent = AnimPage
+-- قائمة بـ 15 زر أنيميشن
+local AnimationsList = {
+    {Name = "1. 💥 Dab (داب)", ID = 248263260},
+    {Name = "2. 🛐 Crouch (جثو / انحناء)", ID = 180436334},
+    {Name = "3. 💃 Floss Dance (رقصة الفلوس)", ID = 10714013233},
+    {Name = "4. 🏋️ Pushups (تمرين الضغط)", ID = 180436148},
+    {Name = "5. 👏 Cheer (تشجيع)", ID = 129423030},
+    {Name = "6. 👋 Wave (تلويح باليد)", ID = 128853357},
+    {Name = "7. 🕺 Dance 1 (رقصة 1)", ID = 182435998},
+    {Name = "8. 🕺 Dance 2 (رقصة 2)", ID = 182436842},
+    {Name = "9. 🕺 Dance 3 (رقصة 3)", ID = 182436935},
+    {Name = "10. 🤔 Point / Think (تفكير)", ID = 158821881},
+    {Name = "11. 🥱 Yawn / Rest (استراحة)", ID = 259209880},
+    {Name = "12. 🥋 Ninja Flex (استعراض القوة)", ID = 333333131},
+    {Name = "13. 🤦 Facepalm (ضرب الوجه)", ID = 284882546},
+    {Name = "14. 🧟 Zombie Walk (مشية الزومبي)", ID = 616158082},
+    {Name = "15. 📐 Sit Floor (جلوس أرضي)", ID = 179224234}
+}
+
+for _, animData in ipairs(AnimationsList) do
+    local Btn = CreateToggleBtn(animData.Name, AnimPage)
+    Btn.MouseButton1Click:Connect(function()
+        PlayAnimation(animData.ID)
+    end)
+end
 
 ---------------------------------------------------------
 -- 3. تبويب استهداف
 ---------------------------------------------------------
 local TargetPage = Pages["استهداف"]
-
 local SelectedPlayer = nil
 
 local TargetDropdown = Instance.new("TextButton")
