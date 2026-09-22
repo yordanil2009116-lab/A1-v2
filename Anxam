@@ -8,7 +8,7 @@ local Lighting = game:GetService("Lighting")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- تنظيف الواجهات القديمة
+-- تنظيف الواجهات القديمة لمنع التكرار
 if PlayerGui:FindFirstChild("AnxamCustomUI") then
     PlayerGui.AnxamCustomUI:Destroy()
 end
@@ -114,11 +114,6 @@ local ToggleCorner = Instance.new("UICorner")
 ToggleCorner.CornerRadius = UDim.new(0, 10)
 ToggleCorner.Parent = MiniToggle
 
-local ToggleStroke = Instance.new("UIStroke")
-ToggleStroke.Color = ACCENT_BLUE
-ToggleStroke.Thickness = 1.5
-ToggleStroke.Parent = MiniToggle
-
 MiniToggle.MouseButton1Click:Connect(function()
     MiniToggle.Visible = false
     MainFrame.Visible = true
@@ -165,15 +160,21 @@ local TabButtons = {}
 
 for i, tabName in ipairs(Tabs) do
     local Page = Instance.new("ScrollingFrame")
+    Page.Name = tabName .. "_Page"
     Page.Size = UDim2.new(1, -12, 1, -12)
     Page.Position = UDim2.new(0, 6, 0, 6)
     Page.BackgroundTransparency = 1
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 3
     Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 450)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 400)
     Page.Parent = Container
     Pages[tabName] = Page
+
+    local PageLayout = Instance.new("UIListLayout")
+    PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    PageLayout.Padding = UDim.new(0, 8)
+    PageLayout.Parent = Page
 
     local TabBtn = Instance.new("TextButton")
     TabBtn.Size = UDim2.new(1, 0, 0, 36)
@@ -203,14 +204,9 @@ for i, tabName in ipairs(Tabs) do
 end
 
 ---------------------------------------------------------
--- محتويات تبويب "اللاعب"
+-- محتويات تبويب "اللاعب" فقط
 ---------------------------------------------------------
 local PlayerPage = Pages["اللاعب"]
-
-local PageLayout = Instance.new("UIListLayout")
-PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
-PageLayout.Padding = UDim.new(0, 8)
-PageLayout.Parent = PlayerPage
 
 local function CreateInputRow(labelText, defaultVal)
     local Row = Instance.new("Frame")
@@ -300,7 +296,7 @@ JumpBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 3. مدى الرؤية (FOV)
+-- 3. مدى الرؤية
 local FovBox, FovBtn = CreateInputRow("مدى الرؤية:", 70)
 FovBtn.MouseButton1Click:Connect(function()
     local val = tonumber(FovBox.Text)
@@ -349,7 +345,7 @@ FlyBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 5. الرؤية الليلية (Fullbright)
+-- 5. الرؤية الليلية
 local fullbright = false
 local FullbrightBtn = CreateToggleBtn("الرؤية الليلية: معطل")
 FullbrightBtn.MouseButton1Click:Connect(function()
@@ -367,7 +363,7 @@ FullbrightBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 6. تخطي الجدران (Noclip)
+-- 6. تخطي الجدران
 local noclip = false
 local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل")
 NoclipBtn.MouseButton1Click:Connect(function()
@@ -386,7 +382,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- 7. قفز لانهائي (Infinite Jump)
+-- 7. قفز لانهائي
 local infJump = false
 local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل")
 InfJumpBtn.MouseButton1Click:Connect(function()
@@ -398,15 +394,5 @@ end)
 UserInputService.JumpRequest:Connect(function()
     if infJump and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-
--- 8. إعادة تعيين الشخصية (Reset)
-local ResetBtn = CreateToggleBtn("إعادة تعيين الشخصية (Reset)")
-ResetBtn.BackgroundColor3 = Color3.fromRGB(45, 25, 30)
-ResetBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
-ResetBtn.MouseButton1Click:Connect(function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid.Health = 0
     end
 end)
