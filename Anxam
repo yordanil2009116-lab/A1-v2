@@ -167,7 +167,7 @@ for i, tabName in ipairs(Tabs) do
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 3
     Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 400)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 500)
     Page.Parent = Container
     Pages[tabName] = Page
 
@@ -260,7 +260,7 @@ local function CreateInputRow(labelText, defaultVal)
     return Box, Btn
 end
 
-local function CreateToggleBtn(btnText)
+local function CreateToggleBtn(btnText, parentPage)
     local Btn = Instance.new("TextButton")
     Btn.Size = UDim2.new(1, -6, 0, 38)
     Btn.Text = btnText
@@ -268,7 +268,7 @@ local function CreateToggleBtn(btnText)
     Btn.TextSize = 13
     Btn.Font = Enum.Font.GothamBold
     Btn.BackgroundColor3 = CARD_COLOR
-    Btn.Parent = PlayerPage
+    Btn.Parent = parentPage or PlayerPage
 
     local BtnCorner = Instance.new("UICorner")
     BtnCorner.CornerRadius = UDim.new(0, 8)
@@ -305,8 +305,8 @@ FovBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- 4. زر Fly V3
-local FlyV3Btn = CreateToggleBtn("تشغيل Fly V3 🚀")
+-- 4. Fly V3
+local FlyV3Btn = CreateToggleBtn("تشغيل Fly V3 🚀", PlayerPage)
 FlyV3Btn.BackgroundColor3 = Color3.fromRGB(0, 140, 230)
 FlyV3Btn.MouseButton1Click:Connect(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
@@ -314,7 +314,7 @@ end)
 
 -- 5. الرؤية الليلية
 local fullbright = false
-local FullbrightBtn = CreateToggleBtn("الرؤية الليلية: معطل")
+local FullbrightBtn = CreateToggleBtn("الرؤية الليلية: معطل", PlayerPage)
 FullbrightBtn.MouseButton1Click:Connect(function()
     fullbright = not fullbright
     FullbrightBtn.Text = "الرؤية الليلية: " .. (fullbright and "مفعل 🟢" or "معطل 🔴")
@@ -332,7 +332,7 @@ end)
 
 -- 6. تخطي الجدران
 local noclip = false
-local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل")
+local NoclipBtn = CreateToggleBtn("تخطي الجدران: معطل", PlayerPage)
 NoclipBtn.MouseButton1Click:Connect(function()
     noclip = not noclip
     NoclipBtn.Text = "تخطي الجدران: " .. (noclip and "مفعل 🟢" or "معطل 🔴")
@@ -351,7 +351,7 @@ end)
 
 -- 7. قفز لانهائي
 local infJump = false
-local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل")
+local InfJumpBtn = CreateToggleBtn("قفز لانهائي: معطل", PlayerPage)
 InfJumpBtn.MouseButton1Click:Connect(function()
     infJump = not infJump
     InfJumpBtn.Text = "قفز لانهائي: " .. (infJump and "مفعل 🟢" or "معطل 🔴")
@@ -363,3 +363,77 @@ UserInputService.JumpRequest:Connect(function()
         LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
+
+---------------------------------------------------------
+-- محتويات تبويب "الأنيميشنات" (10 أزرار رقصات R6)
+---------------------------------------------------------
+local AnimPage = Pages["الأنيميشنات"]
+
+local currentTrack = nil
+
+local function AddDanceBtn(danceName, animId)
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, -6, 0, 38)
+    Btn.Text = "💃 " .. danceName
+    Btn.TextColor3 = TEXT_COLOR
+    Btn.TextSize = 13
+    Btn.Font = Enum.Font.GothamBold
+    Btn.BackgroundColor3 = CARD_COLOR
+    Btn.Parent = AnimPage
+
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Btn
+
+    Btn.MouseButton1Click:Connect(function()
+        local char = LocalPlayer.Character
+        if not char or not char:FindFirstChild("Humanoid") then return end
+        local humanoid = char.Humanoid
+
+        if currentTrack and currentTrack.IsPlaying then
+            currentTrack:Stop()
+        end
+
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://" .. tostring(animId)
+        currentTrack = humanoid:LoadAnimation(anim)
+        currentTrack:Play()
+    end)
+end
+
+-- زر إيقاف الرقص
+local StopBtn = Instance.new("TextButton")
+StopBtn.Size = UDim2.new(1, -6, 0, 38)
+StopBtn.Text = "🛑 إيقاف الأنيميشن"
+StopBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+StopBtn.TextSize = 13
+StopBtn.Font = Enum.Font.GothamBold
+StopBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 25)
+StopBtn.Parent = AnimPage
+
+local StopCorner = Instance.new("UICorner")
+StopCorner.CornerRadius = UDim.new(0, 8)
+StopCorner.Parent = StopBtn
+
+StopBtn.MouseButton1Click:Connect(function()
+    if currentTrack then
+        currentTrack:Stop()
+    end
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        for _, track in pairs(LocalPlayer.Character.Humanoid:GetPlayingAnimationTracks()) do
+            track:Stop()
+        end
+    end
+end)
+
+-- قائمة 10 رقصات R6
+AddDanceBtn("رقصة Dance 1", 27789359)
+AddDanceBtn("رقصة Dance 2", 30196114)
+AddDanceBtn("رقصة Dance 3", 248263260)
+AddDanceBtn("رقصة Floss", 59375602)
+AddDanceBtn("رقصة Dab", 183412246)
+AddDanceBtn("رقصة Zombie", 336069291)
+AddDanceBtn("رقصة Hype", 369533346)
+AddDanceBtn("رقصة Headbang", 35654637)
+AddDanceBtn("رقصة Wave", 257070562)
+AddDanceBtn("رقصة Cheer", 507770677)
