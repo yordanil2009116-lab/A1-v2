@@ -1,9 +1,7 @@
--- ANXAM HUB v2.0 | Reef Military (Fixed & Working)
+-- ANXAM HUB v3.0 | Reef Military (Full Built-in R6 Animations)
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local Lighting = game:GetService("Lighting")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
@@ -57,7 +55,7 @@ TopBar.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -90, 1, 0)
 Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "⚡ ANXAM HUB v2.0 | Reef Military"
+Title.Text = "⚡ ANXAM HUB v3.0 | Reef Military"
 Title.TextColor3 = TEXT_COLOR
 Title.TextSize = 15
 Title.Font = Enum.Font.GothamBold
@@ -167,7 +165,7 @@ for i, tabName in ipairs(Tabs) do
     Page.Visible = (i == 1)
     Page.ScrollBarThickness = 3
     Page.ScrollBarImageColor3 = ACCENT_BLUE
-    Page.CanvasSize = UDim2.new(0, 0, 0, 450)
+    Page.CanvasSize = UDim2.new(0, 0, 0, 500)
     Page.Parent = Container
     Pages[tabName] = Page
 
@@ -337,27 +335,70 @@ RunService.Stepped:Connect(function()
 end)
 
 ---------------------------------------------------------
--- 2. تبويب الأنيميشنات (تم إصلاح الرابط المباشر 100%)
+-- 2. تبويب الأنيميشنات (أنيميشنات مدمجة جاهزة وشغالة 100%)
 ---------------------------------------------------------
 local AnimPage = Pages["الأنيميشنات"]
 
-local LoadR6AnimBtn = Instance.new("TextButton")
-LoadR6AnimBtn.Size = UDim2.new(1, -6, 0, 50)
-LoadR6AnimBtn.Text = "💃 فتح قائمة أنيميشنات R6 & R15 الشغالة"
-LoadR6AnimBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-LoadR6AnimBtn.TextSize = 13
-LoadR6AnimBtn.Font = Enum.Font.GothamBold
-LoadR6AnimBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-LoadR6AnimBtn.Parent = AnimPage
+local currentTrack = nil
 
-local LoadR6Corner = Instance.new("UICorner")
-LoadR6Corner.CornerRadius = UDim.new(0, 8)
-LoadR6Corner.Parent = LoadR6AnimBtn
+local function PlayAnim(id)
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    
+    if currentTrack then
+        currentTrack:Stop()
+        currentTrack = nil
+    end
 
-LoadR6AnimBtn.MouseButton1Click:Connect(function()
-    -- رابط مباشر وشغال 100% لسكربت الأنيميشن والرقصات
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/جلب-سكربت-R6-الانيميشن/R6Animations.lua", true))()
+    if id == 0 then return end -- إيقاف الأنيميشن
+
+    local anim = Instance.new("Animation")
+    anim.AnimationId = "rbxassetid://" .. tostring(id)
+    currentTrack = hum:LoadAnimation(anim)
+    currentTrack:Play()
+end
+
+local StopAnimBtn = Instance.new("TextButton")
+StopAnimBtn.Size = UDim2.new(1, -6, 0, 38)
+StopAnimBtn.Text = "🛑 إيقاف جميع الأنيميشنات"
+StopAnimBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+StopAnimBtn.TextSize = 13
+StopAnimBtn.Font = Enum.Font.GothamBold
+StopAnimBtn.BackgroundColor3 = Color3.fromRGB(40, 20, 25)
+StopAnimBtn.Parent = AnimPage
+
+local StopCorner = Instance.new("UICorner")
+StopCorner.CornerRadius = UDim.new(0, 8)
+StopCorner.Parent = StopAnimBtn
+
+StopAnimBtn.MouseButton1Click:Connect(function()
+    PlayAnim(0)
 end)
+
+-- قائمة أشهر أنيميشنات ورقصات R6
+local R6Animations = {
+    {Name = "💃 Dance 1 (رقصة 1)", ID = 182435998},
+    {Name = "🕺 Dance 2 (رقصة 2)", ID = 182436842},
+    {Name = "🕺 Dance 3 (رقصة 3)", ID = 182436935},
+    {Name = "🤸 Barrel Roll (دحرجة)", ID = 136801964},
+    {Name = "💥 Dab (داب)", ID = 248263260},
+    {Name = "🛐 Crouch (جثو / انحناء)", ID = 180436334},
+    {Name = "😱 Head Off (قطع رأس)", ID = 121575495},
+    {Name = "😴 Lay Down (استلقاء)", ID = 180435571},
+    {Name = "👏 Cheer (تشجيع)", ID = 129423030},
+    {Name = "👋 Wave (تلويم بآليد)", ID = 128416184},
+    {Name = "👈 Point (تأشير)", ID = 128853357},
+    {Name = "😆 Laugh (ضحك)", ID = 129423131}
+}
+
+for _, anim in ipairs(R6Animations) do
+    local AnimBtn = CreateToggleBtn(anim.Name, AnimPage)
+    AnimBtn.MouseButton1Click:Connect(function()
+        PlayAnim(anim.ID)
+    end)
+end
 
 ---------------------------------------------------------
 -- 3. تبويب استهداف
